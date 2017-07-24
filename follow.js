@@ -1,6 +1,6 @@
 /***********************************
 
- follow.js v0.51 beta
+ follow.js v0.52 beta
 
 ************************************/
 
@@ -383,7 +383,6 @@ function isLocked() {
 	load = "SET !EXTRACT null" + "\n";
 	load += "TAG POS=1 TYPE=DIV ATTR=CLASS:PageHeader&&TXT:* EXTRACT=TXT" + "\n";
 	iimPlayCode(load);
-	if (SHOW_ALERTS) alert("iimGetLastExtract()=" + iimGetLastExtract() + "\n" + "iimGetLastExtract(0)=" + iimGetLastExtract(0) + "\n" + "iimGetLastExtract(1)=" + iimGetLastExtract(1) + "\n" + "iimGetLastExtract(2)=" + iimGetLastExtract(2));
 	if (iimGetLastExtract().trim() == "Your account has been locked.") {
 		//alert("account is locked!!!");
 		return true; 
