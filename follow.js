@@ -143,7 +143,8 @@ function follow() {
 }
 
 function loop(i, followedTotal, urls) {
-	if (SHOW_ALERTS) alert("start of loop: \ni = " + i + "\nfollowedTotal = " + followedTotal);
+	//if (SHOW_ALERTS) 
+	alert("start of loop: \ni = " + i + "\nfollowedTotal = " + followedTotal);
 	var urlValid = false;
 	iimSet("followURL",urls[i]);
 
@@ -274,14 +275,17 @@ function loop(i, followedTotal, urls) {
 					
 						//check if we should proceed with next url or log and quit 
 						if (followedTotal < MAX_FOLLOW_COUNT) {
-							if (SHOW_ALERTS) alert("Finished with following. Followedtotal = " + followedTotal + "\n FollowedThis = " + followedThis  + "\n i = " + i  + "\n urls.len = " + urls.length);
+							//if (SHOW_ALERTS)
+							alert("Finished with following. Followedtotal = " + followedTotal + "\n FollowedThis = " + followedThis  + "\n i = " + i  + "\n urls.len = " + urls.length);
 							if (i < urls.length-1) {
 								var j=i+1;
-								if (SHOW_ALERTS) alert("Calling loop for another one. i+1 = " + j);
+								//if (SHOW_ALERTS)
+								alert("Calling loop for another one. i+1 = " + j);
 								//call for the next one
 								loop(j, followedTotal,urls);
 							} else {
-								if (SHOW_ALERTS) alert("No more urls. Logging finish with warnings and close.");
+								//if (SHOW_ALERTS)
+								alert("No more urls. Logging finish with warnings and close.");
 								//no more urls
 								//log the follow procedure
 								var desc = "Code 82: Follow procedure completed with warnings. Followed total of " + followedTotal + " accounts, across " + i + " urls. The quota of " + MAX_FOLLOW_COUNT + " follows was not reached.";
