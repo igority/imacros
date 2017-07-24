@@ -1,5 +1,5 @@
 /***********************************
- follow.js v1.0
+ follow.js v1.02
 ************************************/
 
 //global parameters with default values.
@@ -256,13 +256,15 @@ function loop(i, followedTotal, urls) {
 								//log partial follow
 								//log locked error
 								//close
-								var desc = "Code 97: Partial follow before account locked: Followed less than " + followedThis  + " accounts from url: [" + i + "/" + urls.length + "] " + urls[i] + ". Total followed so far: LESS than " + followedTotal;
+								var j=i+1;
+								var desc = "Code 97: Partial follow before account locked: Followed less than " + followedThis  + " accounts from url: [" + j + "/" + urls.length + "] " + urls[i] + ". Total followed so far: LESS than " + followedTotal;
 								writeLog("INFO",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
 								var desc = "Code 03: The profile has been locked! Pending phone verification!";
 								writeLog("ERROR",PROFILE,desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
 								closeFirefox();
 							} else {
-								var desc = "Code 98: Followed " + followedThis  + " accounts from url: [" + i + "/" + urls.length + "] " + urls[i] + " (partial follow, limit reached) Total followed so far: " + followedTotal;
+							var j=i+1;
+								var desc = "Code 98: Followed " + followedThis  + " accounts from url: [" + j + "/" + urls.length + "] " + urls[i] + " (partial follow, limit reached) Total followed so far: " + followedTotal;
 								writeLog("INFO",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
 								//log a successful follow procedure
 								var desc = "Code 81: Follow procedure completed successfully. Followed total of " + followedTotal + " accounts, across " + i + " urls";
@@ -286,7 +288,8 @@ function loop(i, followedTotal, urls) {
 						//log partial follow
 						//log locked error
 						//close
-						var desc = "Code 97: Partial follow before account locked: Followed less than " + followedThis  + " accounts from url: [" + i + "/" + urls.length + "] " + urls[i] + ". Total followed so far: LESS than " + followedTotal;
+						var j=i+1;
+						var desc = "Code 97: Partial follow before account locked: Followed less than " + followedThis  + " accounts from url: [" + j + "/" + urls.length + "] " + urls[i] + ". Total followed so far: LESS than " + followedTotal;
 						writeLog("INFO",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
 						var desc = "Code 03: The profile has been locked! Pending phone verification!";
 						writeLog("ERROR",PROFILE,desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
