@@ -70,6 +70,40 @@ function follow() {
 			iimPlay(load);
 			value=iimGetLastExtract();
 		}
+		
+		if (TEST_MODE) {
+		/*
+		var SHOW_ALERTS = true;
+var MAX_FOLLOW_COUNT = 400;
+var FOLLOW_SCROLLS_COUNT = 1;
+
+var GLOBAL_ERROR_LOGS_FOLDER = 'C:\\Tasks\\GlobalLogs';
+var GLOBAL_ERROR_LOGS_FILE = 'global_error_log.csv';
+
+var GLOBAL_INFO_LOGS_FOLDER = 'C:\\Tasks\\GlobalLogs';
+var GLOBAL_INFO_LOGS_FILE = 'global_info_log.csv';
+
+var LOG_FILE = PROFILE + 'log.csv';
+var URLS_FILE = PROFILE + 'urls.csv';
+
+var CSV_FOLDER = 'C:\\Tasks\\Csv';
+
+var URLS_FULL_PATH = CSV_FOLDER + '\\' + URLS_FILE;
+var LOG_FULL_PATH = CSV_FOLDER + '\\' + LOG_FILE;
+		*/
+			alert("PROFILE: " + PROFILE);
+			alert("\n" + "MAX_FOLLOW_COUNT: " + MAX_FOLLOW_COUNT);
+			alert("\n" + "FOLLOW_SCROLLS_COUNT: " + FOLLOW_SCROLLS_COUNT);
+			alert("\n" + "GLOBAL_ERROR_LOGS_FOLDER: " + GLOBAL_ERROR_LOGS_FOLDER);
+			alert("\n" + "GLOBAL_ERROR_LOGS_FILE: " + GLOBAL_ERROR_LOGS_FILE);
+			alert("\n" + "GLOBAL_INFO_LOGS_FOLDER: " + GLOBAL_INFO_LOGS_FOLDER);
+			alert("\n" + "GLOBAL_INFO_LOGS_FILE: " + GLOBAL_INFO_LOGS_FILE);
+			alert("\n" + "LOG_FILE: " + LOG_FILE);
+			alert("\n" + "URLS_FILE: " + URLS_FILE);
+			alert("\n" + "URLS_FULL_PATH: " + URLS_FULL_PATH);
+			alert("\n" + "LOG_FULL_PATH: " + LOG_FULL_PATH);
+
+			}
 			
 			//=======	
 		//2. Get the last logged url	
