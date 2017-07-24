@@ -1,8 +1,18 @@
+/***********************************
 
+ follow.js v0.50 beta
+
+************************************/
+
+//global parameters with default values.
+//Override these in local files if you wish them changed.
+
+var PROFILE;				//the indentifier for this profile. This one MUST be set in the local file!
+
+var TEST_MODE = true;
+var SHOW_ALERTS = true;
 var MAX_FOLLOW_COUNT = 400;
-var FOLLOW_SCROLLS_COUNT = 0;
-
-var PROFILE = '100';				//the indentifier for this profile
+var FOLLOW_SCROLLS_COUNT = 1;
 
 var GLOBAL_ERROR_LOGS_FOLDER = 'C:\\Tasks\\GlobalLogs';
 var GLOBAL_ERROR_LOGS_FILE = 'global_error_log.csv';
@@ -17,12 +27,6 @@ var CSV_FOLDER = 'C:\\Tasks\\Csv';
 
 var URLS_FULL_PATH = CSV_FOLDER + '\\' + URLS_FILE;
 var LOG_FULL_PATH = CSV_FOLDER + '\\' + LOG_FILE;
-
-
-
-
-//follow();
-
 
 function closeFirefox() {
 	var myCode = 'WAIT SECONDS=1' + '\n';
@@ -43,20 +47,9 @@ function follow() {
 		var value;
 		var prevValue;
 		var followURL;
-		/*
-		urls[0] = "https://twitter.com/ddfporno/followers";
-		urls[1] = "https://twitter.com/realitykingsxxx/followers";
-		urls[2] = "https://twitter.com/clementine_cro/followers";
-		urls[3] = "https://twitter.com/mostlyboobz/followers";
-		urls[4] = "https://twitter.com/lesbian_pornbj/followers";
-		urls[5] = "https://twitter.com/lingeshwar18/followers";
-		*/
-
-
 
 		//=======
 		//1. get an array of all urls
-		//alert(URLS_FULL_PATH);
 		load =  "CODE:";
 		load +=  "set !extract null" + "\n"; 
 		load +=  "SET !DATASOURCE " + URLS_FULL_PATH + "\n"; 
@@ -213,8 +206,7 @@ function sorturls(urls, lastLog) {
 }
 
 function loop(i, followedTotal, urls) {
-	
-	alert("start of loop: \ni = " + i + "\nfollowedTotal = " + followedTotal);
+	if (SHOW_ALERTS) alert("start of loop: \ni = " + i + "\nfollowedTotal = " + followedTotal);
 	var urlValid = false;
 	iimSet("followURL",urls[i]);
 
@@ -266,8 +258,8 @@ function loop(i, followedTotal, urls) {
 			load +=  "WAIT SECONDS=3" + "\n";
 		}
 		iimPlay(load);
-		
-		loadScriptFromURL('http://devbattles.com/js/jq.for.im.js');		
+		loadJQuery('https://raw.githubusercontent.com/igority/imacros/master/jq.for.im.js');	
+		//loadJQuery('http://devbattles.com/js/jq.for.im.js');		
 		$ = window.$,
 		JQuery = window.JQuery;
 		jQuery = window.jQuery;
@@ -284,7 +276,7 @@ function loop(i, followedTotal, urls) {
 				//do the clicks here
 					function () {
 						if (followedTotal < MAX_FOLLOW_COUNT) {
-							//ele.click();
+							if (!TEST_MODE) ele.click();
 							followedThis++;
 							followedTotal++;
 						} else {
@@ -301,7 +293,7 @@ function loop(i, followedTotal, urls) {
 								writeLog("ERROR",PROFILE,desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
 								closeFirefox();
 							} else {
-								var desc = "Code 98: Followed " + followedThis  + " accounts from url: [" + i + "/" + urls.length + "] " + urls[i] + ".(partial follow, limit reached) Total followed so far: " + followedTotal;
+								var desc = "Code 98: Followed " + followedThis  + " accounts from url: [" + i + "/" + urls.length + "] " + urls[i] + " (partial follow, limit reached) Total followed so far: " + followedTotal;
 								writeLog("INFO",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
 								//log a successful follow procedure
 								var desc = "Code 81: Follow procedure completed successfully. Followed total of " + followedTotal + " accounts, across " + i + " urls";
@@ -334,7 +326,7 @@ function loop(i, followedTotal, urls) {
 					//log following
 					var j = i+1;
 					var remains = MAX_FOLLOW_COUNT - followedTotal;
-					var desc = "Code 98: Followed " + followedThis  + " accounts from url: [" + j + "/" + urls.length + "] " + urls[i] + ". Total followed so far: " + followedTotal + ". Still needed to reach quota: " + remains;
+					var desc = "Code 98: Followed " + followedThis  + " accounts from url: [" + j + "/" + urls.length + "] " + urls[i] + " Total followed so far: " + followedTotal + ". Still needed to reach quota: " + remains;
 					writeLog("INFO",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
 					
 					//if nobody got followed, it is suspicious. Better log warning so we can investigate manually
@@ -345,15 +337,14 @@ function loop(i, followedTotal, urls) {
 					
 						//check if we should proceed with next url or log and quit 
 						if (followedTotal < MAX_FOLLOW_COUNT) {
-							
-							alert("Finished with following. Followedtotal = " + followedTotal + "\n FollowedThis = " + followedThis  + "\n i = " + i  + "\n urls.len = " + urls.length);
+							if (SHOW_ALERTS) alert("Finished with following. Followedtotal = " + followedTotal + "\n FollowedThis = " + followedThis  + "\n i = " + i  + "\n urls.len = " + urls.length);
 							if (i < urls.length-1) {
 								var j=i+1;
-								alert("Calling loop for another one. i+1 = " + j);
+								if (SHOW_ALERTS) alert("Calling loop for another one. i+1 = " + j);
 								//call for the next one
 								loop(j, followedTotal,urls);
 							} else {
-								alert("No more urls. Logging finish with warnings and close.");
+								if (SHOW_ALERTS) alert("No more urls. Logging finish with warnings and close.");
 								//no more urls
 								//log the follow procedure
 								var desc = "Code 82: Follow procedure completed with warnings. Followed total of " + followedTotal + " accounts, across " + i + " urls. The quota of " + MAX_FOLLOW_COUNT + " follows was not reached.";
@@ -389,7 +380,7 @@ function isLocked() {
 	load +=  "SET !extract null" + "\n";
 	load +=  "TAG POS=1 TYPE=DIV ATTR=TXT:Your<SP>account<SP>has<SP>been<SP>locked. EXTRACT=TXT" + "\n";
 	iimPlay(load);
-//alert("iimGetLastExtract(1)=" + iimGetLastExtract(1));
+	if (SHOW_ALERTS) alert("iimGetLastExtract()=" + iimGetLastExtract() + "\n" + "iimGetLastExtract(0)=" + iimGetLastExtract(0) + "\n" + "iimGetLastExtract(1)=" + iimGetLastExtract(1) + "\n" + "iimGetLastExtract(2)=" + iimGetLastExtract(2));
 	if (iimGetLastExtract(1) == null || iimGetLastExtract(1) == '#EANF#') {
 		//alert("not locked");
 		return false;
@@ -399,7 +390,7 @@ function isLocked() {
 	}
 }
 
-function loadScriptFromURL(url) {
+function loadJQuery(url) {
     var request = Components.classes['@mozilla.org/xmlextras/xmlhttprequest;1'].createInstance(Components.interfaces.nsIXMLHttpRequest),
         async = false;
     request.open('GET', url, async);
