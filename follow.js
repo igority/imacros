@@ -1,5 +1,5 @@
 /***********************************
- follow.js v1.02
+ follow.js v1.05
 ************************************/
 
 //global parameters with default values.
@@ -41,7 +41,8 @@ function follow() {
 	load += 'URL GOTO="https://twitter.com"' + '\n';
 	iimPlay(load);
 	
-	if (!isLocked()) {
+	var lockedCheck = isLocked();
+	if (!lockedCheck) {
 
 		//=======
 		//1. get an array of all urls
@@ -67,25 +68,25 @@ function follow() {
 			value=iimGetLastExtract();
 		}
 		
-		if (TEST_MODE) {
+		if (SHOW_ALERTS) {
 		/*
 		var SHOW_ALERTS = true;
-var MAX_FOLLOW_COUNT = 400;
-var FOLLOW_SCROLLS_COUNT = 1;
+		var MAX_FOLLOW_COUNT = 400;
+		var FOLLOW_SCROLLS_COUNT = 1;
 
-var GLOBAL_ERROR_LOGS_FOLDER = 'C:\\Tasks\\GlobalLogs';
-var GLOBAL_ERROR_LOGS_FILE = 'global_error_log.csv';
+		var GLOBAL_ERROR_LOGS_FOLDER = 'C:\\Tasks\\GlobalLogs';
+		var GLOBAL_ERROR_LOGS_FILE = 'global_error_log.csv';
 
-var GLOBAL_INFO_LOGS_FOLDER = 'C:\\Tasks\\GlobalLogs';
-var GLOBAL_INFO_LOGS_FILE = 'global_info_log.csv';
+		var GLOBAL_INFO_LOGS_FOLDER = 'C:\\Tasks\\GlobalLogs';
+		var GLOBAL_INFO_LOGS_FILE = 'global_info_log.csv';
 
-var LOG_FILE = PROFILE + 'log.csv';
-var URLS_FILE = PROFILE + 'urls.csv';
+		var LOG_FILE = PROFILE + 'log.csv';
+		var URLS_FILE = PROFILE + 'urls.csv';
 
-var CSV_FOLDER = 'C:\\Tasks\\Csv';
+		var CSV_FOLDER = 'C:\\Tasks\\Csv';
 
-var URLS_FULL_PATH = CSV_FOLDER + '\\' + URLS_FILE;
-var LOG_FULL_PATH = CSV_FOLDER + '\\' + LOG_FILE;
+		var URLS_FULL_PATH = CSV_FOLDER + '\\' + URLS_FILE;
+		var LOG_FULL_PATH = CSV_FOLDER + '\\' + LOG_FILE;
 		*/
 			alert("PROFILE: " + PROFILE);
 			alert("\n" + "MAX_FOLLOW_COUNT: " + MAX_FOLLOW_COUNT);
@@ -167,7 +168,26 @@ var LOG_FULL_PATH = CSV_FOLDER + '\\' + LOG_FILE;
 			loop(i,followedTotal,urls);
 			
 	} else {
-		var desc = "Code 03: The profile has been locked! Pending phone verification!";
+		var desc;
+		switch(lockedCheck) {
+			case 1:
+				desc = "Code 03: The account has been locked! Pending phone verification!";
+				break;
+			case 2:
+				desc = "Code 04: The account has been locked! Password change required!";
+				break;
+			case 3:
+				desc = "Code 10: The account is probably locked (more likely) or suspended. Type of lock not recognized, manual check required!";
+				break;
+			case 8:
+				desc = "Code 10: The account is probably suspended (more likely) or locked. Type of lock not recognized, manual check required!";
+				break;
+			case 9:
+				desc = "Code 05: The account has been suspended!";
+				break;
+			default:
+				desc = "Code 10: The account is maybe locked or suspended. Type of lock not recognized, manual check required!";
+		}
 		writeLog("ERROR",PROFILE,desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
 		closeFirefox();
 	}
@@ -193,7 +213,8 @@ function loop(i, followedTotal, urls) {
 		//log a warning for the invalid url
 		desc = "Code 31: " + urls[i] + " is not a valid url!";
 		writeLog("WARNING",PROFILE,desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
-			if (!isLocked()) {
+			var lockedCheck = isLocked();
+			if (!lockedCheck) {
 				if (i<urls.length) {
 					//call for the next one
 					loop(i+1, followedTotal,urls);
@@ -208,7 +229,26 @@ function loop(i, followedTotal, urls) {
 				}
 			} else {
 				//profile locked
-				var desc = "Code 03: The profile has been locked! Pending phone verification!";
+				var desc;
+				switch(lockedCheck) {
+					case 1:
+						desc = "Code 03: The account has been locked! Pending phone verification!";
+						break;
+					case 2:
+						desc = "Code 04: The account has been locked! Password change required!";
+						break;
+					case 3:
+						desc = "Code 10: The account is probably locked (more likely) or suspended. Type of lock not recognized, manual check required!";
+						break;
+					case 8:
+						desc = "Code 10: The account is probably suspended (more likely) or locked. Type of lock not recognized, manual check required!";
+						break;
+					case 9:
+						desc = "Code 05: The account has been suspended!";
+						break;
+					default:
+						desc = "Code 10: The account is maybe locked or suspended. Type of lock not recognized, manual check required!";
+				}
 				writeLog("ERROR",PROFILE,desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
 				closeFirefox();
 			}
@@ -253,14 +293,36 @@ function loop(i, followedTotal, urls) {
 							//no need to continue with the others, we reached our goal, so we might as well close the browser
 							//alert("done! no need for more checks. Log and close");
 							//first check if maybe the account got locked
-							if (isLocked()) {
+							var lockedCheck = isLocked();
+							if (lockedCheck) {
 								//log partial follow
 								//log locked error
 								//close
 								var j=i+1;
 								var desc = "Code 97: Partial follow before account locked: Followed less than " + followedThis  + " accounts from url: [" + j + "/" + urls.length + "] " + urls[i] + ". Total followed so far: LESS than " + followedTotal;
 								writeLog("INFO",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
-								var desc = "Code 03: The profile has been locked! Pending phone verification!";
+								
+								var desc;
+								switch(lockedCheck) {
+									case 1:
+										desc = "Code 03: The account has been locked! Pending phone verification!";
+										break;
+									case 2:
+										desc = "Code 04: The account has been locked! Password change required!";
+										break;
+									case 3:
+										desc = "Code 10: The account is probably locked (more likely) or suspended. Type of lock not recognized, manual check required!";
+										break;
+									case 8:
+										desc = "Code 10: The account is probably suspended (more likely) or locked. Type of lock not recognized, manual check required!";
+										break;
+									case 9:
+										desc = "Code 05: The account has been suspended!";
+										break;
+									default:
+										desc = "Code 10: The account is maybe locked or suspended. Type of lock not recognized, manual check required!";
+								}
+								
 								writeLog("ERROR",PROFILE,desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
 								closeFirefox();
 							} else {
@@ -286,14 +348,35 @@ function loop(i, followedTotal, urls) {
 		//when finished with the clicks
 			function () { 
 				if (followedTotal < MAX_FOLLOW_COUNT) {
-					if (isLocked()) {
+					var lockedCheck = isLocked();
+					if (lockedCheck) {
 						//log partial follow
 						//log locked error
 						//close
 						var j=i+1;
 						var desc = "Code 97: Partial follow before account locked: Followed less than " + followedThis  + " accounts from url: [" + j + "/" + urls.length + "] " + urls[i] + ". Total followed so far: LESS than " + followedTotal;
 						writeLog("INFO",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
-						var desc = "Code 03: The profile has been locked! Pending phone verification!";
+						
+						var desc;
+						switch(lockedCheck) {
+							case 1:
+								desc = "Code 03: The account has been locked! Pending phone verification!";
+								break;
+							case 2:
+								desc = "Code 04: The account has been locked! Password change required!";
+								break;
+							case 3:
+								desc = "Code 10: The account is probably locked (more likely) or suspended. Type of lock not recognized, manual check required!";
+								break;
+							case 8:
+								desc = "Code 10: The account is probably suspended (more likely) or locked. Type of lock not recognized, manual check required!";
+								break;
+							case 9:
+								desc = "Code 05: The account has been suspended!";
+								break;
+							default:
+								desc = "Code 10: The account is maybe locked or suspended. Type of lock not recognized, manual check required!";
+						}
 						writeLog("ERROR",PROFILE,desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
 						closeFirefox();
 					} else {
@@ -416,22 +499,57 @@ function closeFirefox() {
 }
 
 function isLocked() {
-return false;
-
+	/*
+	 * possible values:
+	 * 0 - not locked
+	 * 1 - phone verification
+	 * 2 - password change required
+	 * 3 - something else (blocked)
+	 * 8 - something else (suspended)
+	 * 9 - suspended
+	 */
 	var load;
 	load =  "SET !TIMEOUT_STEP 0" + "\n";
 	load += "SET !EXTRACT null" + "\n";
 	load += "TAG POS=1 TYPE=DIV ATTR=CLASS:PageHeader&&TXT:* EXTRACT=TXT" + "\n";
 	iimPlayCode(load);
-	if (iimGetLastExtract().trim() == "Your account has been locked.") {
-		//alert("account is locked!!!");
-		return true; 
 
-	} else { 
-		//alert("not locked");
-		return false;
+	var value = iimGetLastExtract().trim();
+	if (SHOW_ALERTS) alert('value = ' + value);
+	if (value == null || value == '#EANF#') {
+	if (SHOW_ALERTS) alert('return 0');
+		var load;
+		load =  "SET !TIMEOUT_STEP 0" + "\n";
+		load += "SET !EXTRACT null" + "\n";
+		load += "TAG POS=1 TYPE=DIV ATTR=ID:account-suspended&&TXT:* EXTRACT=TXT" + "\n";
+		iimPlayCode(load);
+		var valueSuspended = iimGetLastExtract().trim();
+		if (SHOW_ALERTS) alert(valueSuspended);
+		if (valueSuspended == '#EANF#' || valueSuspended == null) {
+			return 0;
+		} else {
+			if (valueSuspended.includes('suspended')) {
+				return 9;
+			} else {
+				return 8;
+			}
+		}
+		return 0;
+	} else {
+		switch(value) {
+			case "Your account has been locked.":
+				if (SHOW_ALERTS) alert('return 1');
+				return 1;
+				break;
+			case "Password change required":
+				if (SHOW_ALERTS) alert('return 2');
+				return 2;
+				break;
+			default:
+				if (SHOW_ALERTS) alert('return 3');
+				return 3;
+		}
 	}
-
 }
 
 function loadJQuery(url) {
