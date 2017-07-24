@@ -1,5 +1,5 @@
 /***********************************
- unfollow.js v0.5 beta
+ unfollow.js v0.51 beta
 ************************************/
 
 /*	
@@ -21,7 +21,7 @@ var MAX_WAIT_STEPS = 50;	//if profile still hasn't been loaded, how many times s
 var STEP_TIME = 3;		//interval (seconds) for the additional checks
 
 var MASS_UNFOLLOWS_COUNT = 4;	//number of batches of Unfollow click. Every batch unfollows 100 users
-var MASS_UNFOLLOW_DELAY = 5;	//seconds to wait after a mass unfollow click, so another batch of accounts is being loaded.
+var MASS_UNFOLLOW_DELAY = 4000;	//miliseconds to wait after a mass unfollow click, so another batch of accounts is being loaded.
 
 var GLOBAL_ERROR_LOGS_FOLDER = 'C:\\Tasks\\GlobalLogs';
 var GLOBAL_ERROR_LOGS_FILE = 'global_error_log.csv';
