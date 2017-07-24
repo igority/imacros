@@ -1,10 +1,8 @@
-//default values to the parameters. These can be overriden in the local .js file
-//PROFILE must be set in the local js file
 
-var MAX_FOLLOW_COUNT = 100;
-var FOLLOW_SCROLLS_COUNT = 1;
+var MAX_FOLLOW_COUNT = 400;
+var FOLLOW_SCROLLS_COUNT = 0;
 
-var PROFILE;				//the indentifier for this profile
+var PROFILE = '100';				//the indentifier for this profile
 
 var GLOBAL_ERROR_LOGS_FOLDER = 'C:\\Tasks\\GlobalLogs';
 var GLOBAL_ERROR_LOGS_FILE = 'global_error_log.csv';
@@ -20,115 +18,138 @@ var CSV_FOLDER = 'C:\\Tasks\\Csv';
 var URLS_FULL_PATH = CSV_FOLDER + '\\' + URLS_FILE;
 var LOG_FULL_PATH = CSV_FOLDER + '\\' + LOG_FILE;
 
+
+
+
+//follow();
+
+
+function closeFirefox() {
+	var myCode = 'WAIT SECONDS=1' + '\n';
+	var myCode = 'EVENT TYPE=KEYPRESS SELECTOR=* CHAR="w" MODIFIERS="ctrl,shift"';
+	iimPlayCode(myCode);
+}
+
+
 function follow() {
+	//alert("follow called.");
 	
-var i=1;
-var urls = [];
-var lastLog;
-var load;
-var value;
-var prevValue;
-var followURL;
-/*
-urls[0] = "https://twitter.com/ddfporno/followers";
-urls[1] = "https://twitter.com/realitykingsxxx/followers";
-urls[2] = "https://twitter.com/clementine_cro/followers";
-urls[3] = "https://twitter.com/mostlyboobz/followers";
-urls[4] = "https://twitter.com/lesbian_pornbj/followers";
-urls[5] = "https://twitter.com/lingeshwar18/followers";
-*/
+	if (!isLocked()) {
+			
+		var i=1;
+		var urls = [];
+		var lastLog;
+		var load;
+		var value;
+		var prevValue;
+		var followURL;
+		/*
+		urls[0] = "https://twitter.com/ddfporno/followers";
+		urls[1] = "https://twitter.com/realitykingsxxx/followers";
+		urls[2] = "https://twitter.com/clementine_cro/followers";
+		urls[3] = "https://twitter.com/mostlyboobz/followers";
+		urls[4] = "https://twitter.com/lesbian_pornbj/followers";
+		urls[5] = "https://twitter.com/lingeshwar18/followers";
+		*/
 
 
 
-//=======
-//1. get an array of all urls
-load =  "CODE:";
-load +=  "set !extract null" + "\n"; 
-load +=  "SET !DATASOURCE " + URLS_FULL_PATH + "\n"; 
-load +=  "SET !DATASOURCE_COLUMNS 1" + "\n"; 
-load +=  "SET !DATASOURCE_LINE " + i + "\n"; 
-load +=  "SET !extract {{!col1}}" + "\n";
-iimPlay(load);
-value=iimGetLastExtract();
+		//=======
+		//1. get an array of all urls
+		//alert(URLS_FULL_PATH);
+		load =  "CODE:";
+		load +=  "set !extract null" + "\n"; 
+		load +=  "SET !DATASOURCE " + URLS_FULL_PATH + "\n"; 
+		load +=  "SET !DATASOURCE_COLUMNS 1" + "\n"; 
+		load +=  "SET !DATASOURCE_LINE " + i + "\n"; 
+		load +=  "SET !extract {{!col1}}" + "\n";
+		iimPlay(load);
+		value=iimGetLastExtract();
+		//alert(value);
+		while (value != "") {
+			urls[i-1] = value + '/followers';
+			i++;
+			load =  "CODE:";
+			load +=  "set !extract null" + "\n"; 
+			load +=  "SET !DATASOURCE " + URLS_FULL_PATH + "\n"; 
+			load +=  "SET !DATASOURCE_COLUMNS 1" + "\n"; 
+			load +=  "SET !DATASOURCE_LINE " + i + "\n"; 
+			load +=  "SET !extract {{!col1}}" + "\n";
+			iimPlay(load);
+			value=iimGetLastExtract();
+		}
+			
+			//=======	
+		//2. Get the last logged url	
+		i=1;
+		load =  "CODE:";
+		load +=  "set !extract null" + "\n"; 
+		load +=  "SET !DATASOURCE " + LOG_FULL_PATH + "\n"; 
+		load +=  "SET !DATASOURCE_COLUMNS 2" + "\n"; 
+		load +=  "SET !DATASOURCE_LINE " + i + "\n"; 
+		load +=  "SET !extract {{!col1}}" + "\n";
+		load +=  "ADD !extract {{!col2}}" + "\n";
+		iimPlay(load);
+		value=iimGetLastExtract(0);
+		prevValue = value;
 
-while (value != "") {
-	urls[i-1] = value + '/followers';
-	i++;
-	load =  "CODE:";
-	load +=  "set !extract null" + "\n"; 
-	load +=  "SET !DATASOURCE " + URLS_FULL_PATH + "\n"; 
-	load +=  "SET !DATASOURCE_COLUMNS 1" + "\n"; 
-	load +=  "SET !DATASOURCE_LINE " + i + "\n"; 
-	load +=  "SET !extract {{!col1}}" + "\n";
-	iimPlay(load);
-	value=iimGetLastExtract();
-}
-	
-	//=======	
-//2. Get the last logged url	
-i=1;
-load =  "CODE:";
-load +=  "set !extract null" + "\n"; 
-load +=  "SET !DATASOURCE " + LOG_FULL_PATH + "\n"; 
-load +=  "SET !DATASOURCE_COLUMNS 2" + "\n"; 
-load +=  "SET !DATASOURCE_LINE " + i + "\n"; 
-load +=  "SET !extract {{!col1}}" + "\n";
-load +=  "ADD !extract {{!col2}}" + "\n";
-iimPlay(load);
-value=iimGetLastExtract(0);
-prevValue = value;
+		while (value != "") {
+			i++;	
+			load =  "CODE:";
+			load +=  "set !extract null" + "\n"; 
+			load +=  "SET !DATASOURCE " + LOG_FULL_PATH + "\n"; 
+			load +=  "SET !DATASOURCE_COLUMNS 2" + "\n"; 
+			load +=  "SET !DATASOURCE_LINE " + i + "\n"; 
+			load +=  "SET !extract {{!col1}}" + "\n";
+			load +=  "ADD !extract {{!col2}}" + "\n";
+			iimPlay(load);
+			prevValue = value;
+			value=iimGetLastExtract(0);
+		}
 
-while (value != "") {
-	i++;	
-	load =  "CODE:";
-	load +=  "set !extract null" + "\n"; 
-	load +=  "SET !DATASOURCE " + LOG_FULL_PATH + "\n"; 
-	load +=  "SET !DATASOURCE_COLUMNS 2" + "\n"; 
-	load +=  "SET !DATASOURCE_LINE " + i + "\n"; 
-	load +=  "SET !extract {{!col1}}" + "\n";
-	load +=  "ADD !extract {{!col2}}" + "\n";
-	iimPlay(load);
-	prevValue = value;
-	value=iimGetLastExtract(0);
-}
+		lastLog = prevValue.split("[EXTRACT]");
 
-lastLog = prevValue.split("[EXTRACT]");
+		//lastLog[1] contains the url of the last login. Sort the urls array based on this value
+		/*
+		var alertmsg = "urls before sort:\n";
+		for (i=0;i<urls.length;i++) {
+			alertmsg += urls[i] + "\n";
+		}
+		//alert(alertmsg);
+		*/
+		urls = sorturls(urls,lastLog);
+		/*
+		var alertmsg = "urls after sort:\n";
+		for (i=0;i<urls.length;i++) {
+			alertmsg += urls[i] + "\n";
+		}
+		//alert(alertmsg);
+		*/
+		/*
+		*================------------------========================
+		*/
 
-//lastLog[1] contains the url of the last login. Sort the urls array based on this value
-/*
-var alertmsg = "urls before sort:\n";
-for (i=0;i<urls.length;i++) {
-	alertmsg += urls[i] + "\n";
-}
-alert(alertmsg);
-*/
-urls = sorturls(urls,lastLog);
-/*
-var alertmsg = "urls after sort:\n";
-for (i=0;i<urls.length;i++) {
-	alertmsg += urls[i] + "\n";
-}
-alert(alertmsg);
-*/
-/*
-*================------------------========================
-*/
+			
+				//log this url
+			iimSet("followURL",urls[0]);
+			load =  "CODE:";
+			load +=  "SET !extract {{followURL}}" + "\n";
+			load +=  "ADD !extract {{!NOW:ddmmyy_hhnnss}}" + "\n";
+			load +=  'SAVEAS TYPE=EXTRACT FOLDER=' + CSV_FOLDER + ' FILE=' + LOG_FILE + "\n";
+			iimPlay(load);
+			
+			
+			var followedTotal = 0;
+			var i=0;
+			
+			loop(i,followedTotal,urls);
+			
+	} else {
+		var desc = "Code 03: The profile has been locked! Pending phone verification!";
+		writeLog("ERROR",PROFILE,desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
+		closeFirefox();
+	}
 
-	
-		//log this url
-	iimSet("followURL",urls[0]);
-	load =  "CODE:";
-	load +=  "SET !extract {{followURL}}" + "\n";
-	load +=  "ADD !extract {{!NOW:ddmmyy_hhnnss}}" + "\n";
-	load +=  'SAVEAS TYPE=EXTRACT FOLDER=' + CSV_FOLDER + ' FILE=' + LOG_FILE + "\n";
-	iimPlay(load);
-	
-	
-	var followedTotal = 0;
-	var i=0;
-	
-	loop(i,followedTotal);
-	
 }
 
 function writeLog(profile,type,description,folder,file) {
@@ -141,7 +162,7 @@ function writeLog(profile,type,description,folder,file) {
 	load +=  "ADD !extract {{TYPE}}" + "\n";
 	load +=  "ADD !extract {{DESCRIPTION}}" + "\n";
 	load +=  'SAVEAS TYPE=EXTRACT FOLDER=' + folder + ' FILE=' + file + "\n";
-	load +=  'WAIT SECONDS=3' + '\n';
+	//load +=  'WAIT SECONDS=0.1' + '\n';
 	iimPlay(load);
 }
 
@@ -191,7 +212,7 @@ function sorturls(urls, lastLog) {
 	return tempUrls;
 }
 
-function loop(i, followedTotal) {
+function loop(i, followedTotal, urls) {
 	
 	alert("start of loop: \ni = " + i + "\nfollowedTotal = " + followedTotal);
 	var urlValid = false;
@@ -202,77 +223,32 @@ function loop(i, followedTotal) {
 	load += "URL GOTO={{followURL}}" + "\n";
 	load += "TAG POS=1 TYPE=IMG ATTR=CLASS:ProfileAvatar-image EXTRACT=ALT" + "\n";
 	iimPlay(load);
-	alert(iimGetLastExtract(1));
+	//alert(iimGetLastExtract(1));
 	if (iimGetLastExtract(1) == null || iimGetLastExtract(1) == '#EANF#') {
 		
 		//url is invalid
 		urlValid = false;
-		alert("url invalid");
+		//alert("url invalid");
 		//log a warning for the invalid url
 		desc = "Code 31: " + urls[i] + " is not a valid url!";
 		writeLog("WARNING",PROFILE,desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
-		/*
-		iimSet("TYPE","WARNING");
-		iimSet("PROFILE",PROFILE);
-		iimSet("DESCRIPTION","Code 31: " + urls[i] + " is not a valid url!");
-		load =  "CODE:";
-		load +=  "SET !extract {{!NOW:ddmmyy_hhnnss}}" + "\n";
-		load +=  "ADD !extract {{PROFILE}}" + "\n";
-		load +=  "ADD !extract {{TYPE}}" + "\n";
-		load +=  "ADD !extract {{DESCRIPTION}}" + "\n";
-		load +=  'SAVEAS TYPE=EXTRACT FOLDER=' + GLOBAL_ERROR_LOGS_FOLDER + ' FILE=' + GLOBAL_ERROR_LOGS_FILE + "\n";
-		load +=  'WAIT SECONDS=3' + '\n';
-		iimPlay(load);
-		*/
-			if (followedTotal < MAX_FOLLOW_COUNT) {
+			if (!isLocked()) {
 				if (i<urls.length) {
 					//call for the next one
-					loop(i+1, followedTotal);
+					loop(i+1, followedTotal,urls);
 				} else {
 					//no more urls
 					//log the follow procedure
-					alert("finished with warnings. followedTotal = " + followedTotal);
+					//alert("finished with warnings. followedTotal = " + followedTotal);
 					var desc = "Code 82: Follow procedure completed with warnings. Followed total of " + followedTotal + " accounts, across " + i + " urls. The quota of " + MAX_FOLLOW_COUNT + " follows was not reached.";
 					writeLog("INFO",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
-					/*
-					iimSet("TYPE","INFO");
-					iimSet("PROFILE",PROFILE);
-					iimSet("DESCRIPTION","Code 82: Follow procedure completed with warnings. Followed total of " + followedTotal + " accounts, across " + i + " urls. The quota of " + MAX_FOLLOW_COUNT + " follows was not reached.");
-					load =  "CODE:";
-					load +=  "SET !extract {{!NOW:ddmmyy_hhnnss}}" + "\n";
-					load +=  "ADD !extract {{PROFILE}}" + "\n";
-					load +=  "ADD !extract {{TYPE}}" + "\n";
-					load +=  "ADD !extract {{DESCRIPTION}}" + "\n";
-					load +=  'SAVEAS TYPE=EXTRACT FOLDER=' + GLOBAL_INFO_LOGS_FOLDER + ' FILE=' + GLOBAL_INFO_LOGS_FILE + "\n";
-					load +=  'WAIT SECONDS=3' + '\n';
-					iimPlay(load);
-					*/
-					//close
-					var myCode = 'EVENT TYPE=KEYPRESS SELECTOR=* CHAR="w" MODIFIERS="ctrl,shift"';
-					iimPlayCode(myCode);
+					closeFirefox();
 				}
 			} else {
-				//we are done.
-				//log a successful follow procedure
-				alert("finished ok. followedTotal = " + followedTotal);
-				var desc = "Code 81: Follow procedure completed successfully. Followed total of " + followedTotal + " accounts, across " + i + " urls";
-				writeLog("INFO",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
-				/*
-				iimSet("TYPE","INFO");
-				iimSet("PROFILE",PROFILE);
-				iimSet("DESCRIPTION","Code 81: Follow procedure completed successfully. Followed total of " + followedTotal + " accounts, across " + i + " urls");
-				load =  "CODE:";
-				load +=  "SET !extract {{!NOW:ddmmyy_hhnnss}}" + "\n";
-				load +=  "ADD !extract {{PROFILE}}" + "\n";
-				load +=  "ADD !extract {{TYPE}}" + "\n";
-				load +=  "ADD !extract {{DESCRIPTION}}" + "\n";
-				load +=  'SAVEAS TYPE=EXTRACT FOLDER=' + GLOBAL_INFO_LOGS_FOLDER + ' FILE=' + GLOBAL_INFO_LOGS_FILE + "\n";
-				load +=  'WAIT SECONDS=3' + '\n';
-				iimPlay(load);
-				*/
-				//close
-				var myCode = 'EVENT TYPE=KEYPRESS SELECTOR=* CHAR="w" MODIFIERS="ctrl,shift"';
-				iimPlayCode(myCode);
+				//profile locked
+				var desc = "Code 03: The profile has been locked! Pending phone verification!";
+				writeLog("ERROR",PROFILE,desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
+				closeFirefox();
 			}
 
 	} else {
@@ -280,7 +256,7 @@ function loop(i, followedTotal) {
 		//url is valid
 		urlValid = true;
 		followedThis = 0;
-		alert("url valid. scrolling " + FOLLOW_SCROLLS_COUNT + " times...");
+		//alert("url valid. scrolling " + FOLLOW_SCROLLS_COUNT + " times...");
 			//scroll for mass follow
 		load =  "CODE:";
 		for (k = 0; k < FOLLOW_SCROLLS_COUNT; k++) {
@@ -298,13 +274,14 @@ function loop(i, followedTotal) {
 
 		__cnt__=0; 
 		window.jQuery('.Grid-cell .not-following .follow-text').each(
-			function (i, ele) {
+			function (ind, ele) {
 				ele = window.jQuery(ele);
 				if (ele.css('display')!='block') {
-					console.log('already following:', i);
+					console.log('already following:', ind);
 					return;
 				}
 				window.setTimeout(
+				//do the clicks here
 					function () {
 						if (followedTotal < MAX_FOLLOW_COUNT) {
 							//ele.click();
@@ -312,13 +289,26 @@ function loop(i, followedTotal) {
 							followedTotal++;
 						} else {
 							//no need to continue with the others, we reached our goal, so we might as well close the browser
-							alert("done! no need for more checks. Log and close");
-							
-							var desc = "Code 98: Followed " + followedThis  + " accounts from url: [" + i + "/" + urls.length + "] " + urls[i] + ".(partial follow, limit reached) Total followed so far: " + followedTotal;
-							writeLog("INFO",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
-							//log a successful follow procedure
-							var desc = "Code 81: Follow procedure completed successfully. Followed total of " + followedTotal + " accounts, across " + i + " urls";
-							writeLog("INFO",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
+							//alert("done! no need for more checks. Log and close");
+							//first check if maybe the account got locked
+							if (isLocked()) {
+								//log partial follow
+								//log locked error
+								//close
+								var desc = "Code 97: Partial follow before account locked: Followed less than " + followedThis  + " accounts from url: [" + i + "/" + urls.length + "] " + urls[i] + ". Total followed so far: LESS than " + followedTotal;
+								writeLog("INFO",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
+								var desc = "Code 03: The profile has been locked! Pending phone verification!";
+								writeLog("ERROR",PROFILE,desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
+								closeFirefox();
+							} else {
+								var desc = "Code 98: Followed " + followedThis  + " accounts from url: [" + i + "/" + urls.length + "] " + urls[i] + ".(partial follow, limit reached) Total followed so far: " + followedTotal;
+								writeLog("INFO",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
+								//log a successful follow procedure
+								var desc = "Code 81: Follow procedure completed successfully. Followed total of " + followedTotal + " accounts, across " + i + " urls";
+								writeLog("INFO",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
+								//close
+								closeFirefox();
+							}
 						}
 					},
 					__cnt__++*1000*(Math.floor(Math.random() * (2 - 1.5)) + 1.5)
@@ -328,87 +318,97 @@ function loop(i, followedTotal) {
 		
 		
 		window.setTimeout(
-			function () {
-				
-				
-				//log following
-				var desc = "Code 98: Followed " + followedThis  + " accounts from url: [" + i + "/" + urls.length + "] " + urls[i] + ". Total followed so far: " + followedTotal;
-				writeLog("INFO",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
-				/*
-					iimSet("TYPE","INFO");
-					iimSet("PROFILE",PROFILE);
-					iimSet("DESCRIPTION","Code 98: Followed " + followedThis  + " accounts from url: [" + i + "/" + urls.length + "] " + urls[i] + ". Total followed so far: " + followedTotal);
-					load =  "CODE:";
-					load +=  "SET !extract {{!NOW:ddmmyy_hhnnss}}" + "\n";
-					load +=  "ADD !extract {{PROFILE}}" + "\n";
-					load +=  "ADD !extract {{TYPE}}" + "\n";
-					load +=  "ADD !extract {{DESCRIPTION}}" + "\n";
-					load +=  'SAVEAS TYPE=EXTRACT FOLDER=' + GLOBAL_INFO_LOGS_FOLDER + ' FILE=' + GLOBAL_INFO_LOGS_FILE + "\n";
-					load +=  'WAIT SECONDS=3' + '\n';
-					iimPlay(load);
-				*/
-					//check if we should proceed with next url or log and quit 
-					if (followedTotal < MAX_FOLLOW_COUNT) {
-						
-						alert("Finished with following. Followedtotal = " + followedTotal + "\n FollowedThis = " + followedThis);
-						if (i<urls.length) {
-							var j=i+1;
-							alert("Calling loop for another one. i+1 = " + j);
-							//call for the next one
-							loop(j, followedTotal);
+		//when finished with the clicks
+			function () { 
+				if (followedTotal < MAX_FOLLOW_COUNT) {
+					if (isLocked()) {
+						//log partial follow
+						//log locked error
+						//close
+						var desc = "Code 97: Partial follow before account locked: Followed less than " + followedThis  + " accounts from url: [" + i + "/" + urls.length + "] " + urls[i] + ". Total followed so far: LESS than " + followedTotal;
+						writeLog("INFO",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
+						var desc = "Code 03: The profile has been locked! Pending phone verification!";
+						writeLog("ERROR",PROFILE,desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
+						closeFirefox();
+					} else {
+					//log following
+					var j = i+1;
+					var remains = MAX_FOLLOW_COUNT - followedTotal;
+					var desc = "Code 98: Followed " + followedThis  + " accounts from url: [" + j + "/" + urls.length + "] " + urls[i] + ". Total followed so far: " + followedTotal + ". Still needed to reach quota: " + remains;
+					writeLog("INFO",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
+					
+					//if nobody got followed, it is suspicious. Better log warning so we can investigate manually
+					if (followedThis == 0) {
+						var desc = "Code 33: Followed 0 accounts from url: [" + j + "/" + urls.length + "] " + urls[i] + "! Check this manually, something may be wrong!";
+						writeLog("WARNING",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
+					} 
+					
+						//check if we should proceed with next url or log and quit 
+						if (followedTotal < MAX_FOLLOW_COUNT) {
+							
+							alert("Finished with following. Followedtotal = " + followedTotal + "\n FollowedThis = " + followedThis  + "\n i = " + i  + "\n urls.len = " + urls.length);
+							if (i < urls.length-1) {
+								var j=i+1;
+								alert("Calling loop for another one. i+1 = " + j);
+								//call for the next one
+								loop(j, followedTotal,urls);
+							} else {
+								alert("No more urls. Logging finish with warnings and close.");
+								//no more urls
+								//log the follow procedure
+								var desc = "Code 82: Follow procedure completed with warnings. Followed total of " + followedTotal + " accounts, across " + i + " urls. The quota of " + MAX_FOLLOW_COUNT + " follows was not reached.";
+								writeLog("INFO",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
+								//close
+								closeFirefox();
+								
+							}
+
 						} else {
-							alert("No more urls. Logging finish with warnings and close.");
-							//no more urls
-							//log the follow procedure
-							desc = "Code 82: Follow procedure completed with warnings. Followed total of " + followedTotal + " accounts, across " + i + " urls. The quota of " + MAX_FOLLOW_COUNT + " follows was not reached.";
+						//alert("we are done. \nFollowedtotal = " + followedTotal + "\n FollowedThis = " + followedThis + "Log success and close");
+							//we are done.
+							//log a successful follow procedure
+							var desc = "Code 81: Follow procedure completed successfully. Followed total of " + followedTotal + " accounts, across " + i + " urls";
 							writeLog("INFO",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
-							/*
-							iimSet("TYPE","INFO");
-							iimSet("PROFILE",PROFILE);
-							iimSet("DESCRIPTION","Code 82: Follow procedure completed with warnings. Followed total of " + followedTotal + " accounts, across " + i + " urls. The quota of " + MAX_FOLLOW_COUNT + " follows was not reached.");
-							load =  "CODE:";
-							load +=  "SET !extract {{!NOW:ddmmyy_hhnnss}}" + "\n";
-							load +=  "ADD !extract {{PROFILE}}" + "\n";
-							load +=  "ADD !extract {{TYPE}}" + "\n";
-							load +=  "ADD !extract {{DESCRIPTION}}" + "\n";
-							load +=  'SAVEAS TYPE=EXTRACT FOLDER=' + GLOBAL_INFO_LOGS_FOLDER + ' FILE=' + GLOBAL_INFO_LOGS_FILE + "\n";
-							load +=  'WAIT SECONDS=3' + '\n';
-							iimPlay(load);
-							*/
 							//close
-							var myCode = 'EVENT TYPE=KEYPRESS SELECTOR=* CHAR="w" MODIFIERS="ctrl,shift"';
-							iimPlayCode(myCode);
+							closeFirefox();
 							
 						}
-					/*	*/
-					} else {
-					alert("we are done. \nFollowedtotal = " + followedTotal + "\n FollowedThis = " + followedThis + "Log success and close");
-						//we are done.
-						//log a successful follow procedure
-						var desc = "Code 81: Follow procedure completed successfully. Followed total of " + followedTotal + " accounts, across " + i + " urls";
-						writeLog("INFO",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
-						/*
-						iimSet("TYPE","INFO");
-						iimSet("PROFILE",PROFILE);
-						iimSet("DESCRIPTION","Code 81: Follow procedure completed successfully. Followed total of " + followedTotal + " accounts, across " + i + " urls");
-						load =  "CODE:";
-						load +=  "SET !extract {{!NOW:ddmmyy_hhnnss}}" + "\n";
-						load +=  "ADD !extract {{PROFILE}}" + "\n";
-						load +=  "ADD !extract {{TYPE}}" + "\n";
-						load +=  "ADD !extract {{DESCRIPTION}}" + "\n";
-						load +=  'SAVEAS TYPE=EXTRACT FOLDER=' + GLOBAL_INFO_LOGS_FOLDER + ' FILE=' + GLOBAL_INFO_LOGS_FILE + "\n";
-						load +=  'WAIT SECONDS=3' + '\n';
-						iimPlay(load);
-						*/
-						//close
-						var myCode = 'EVENT TYPE=KEYPRESS SELECTOR=* CHAR="w" MODIFIERS="ctrl,shift"';
-						iimPlayCode(myCode);
-						
 					}
-					
+				}
 			},
 			__cnt__++*1000*(Math.floor(Math.random() * (2 - 1.5)) + 1.5)
 		);
 	}
 
+}
+
+function isLocked() {
+	var load;
+	load =  "CODE:";
+	load =  "SET !TIMEOUT_STEP 0:" + "\n";
+	load +=  "SET !extract null" + "\n";
+	load +=  "TAG POS=1 TYPE=DIV ATTR=TXT:Your<SP>account<SP>has<SP>been<SP>locked. EXTRACT=TXT" + "\n";
+	iimPlay(load);
+//alert("iimGetLastExtract(1)=" + iimGetLastExtract(1));
+	if (iimGetLastExtract(1) == null || iimGetLastExtract(1) == '#EANF#') {
+		//alert("not locked");
+		return false;
+	} else {
+		//alert("account is locked!!!");
+		return true;
+	}
+}
+
+function loadScriptFromURL(url) {
+    var request = Components.classes['@mozilla.org/xmlextras/xmlhttprequest;1'].createInstance(Components.interfaces.nsIXMLHttpRequest),
+        async = false;
+    request.open('GET', url, async);
+    request.send();
+    if (request.status !== 200) {
+        var message = 'an error occurred while loading script at url: ' + url + ', status: ' + request.status;
+        iimDisplay(message);
+        return false;
+    }
+    eval(request.response);
+    return true;
 }
