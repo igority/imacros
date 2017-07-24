@@ -201,7 +201,8 @@ function loop(i, followedTotal, urls) {
 					//no more urls
 					//log the follow procedure
 					//alert("finished with warnings. followedTotal = " + followedTotal);
-					var desc = "Code 82: Follow procedure completed with warnings. Followed total of " + followedTotal + " accounts, across " + i + " urls. The quota of " + MAX_FOLLOW_COUNT + " follows was not reached.";
+					var j=i+1;
+					var desc = "Code 82: Follow procedure completed with warnings. Followed total of " + followedTotal + " accounts, across " + j + " urls. The quota of " + MAX_FOLLOW_COUNT + " follows was not reached.";
 					writeLog("INFO",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
 					closeFirefox();
 				}
@@ -267,7 +268,8 @@ function loop(i, followedTotal, urls) {
 								var desc = "Code 98: Followed " + followedThis  + " accounts from url: [" + j + "/" + urls.length + "] " + urls[i] + " (partial follow, limit reached) Total followed so far: " + followedTotal;
 								writeLog("INFO",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
 								//log a successful follow procedure
-								var desc = "Code 81: Follow procedure completed successfully. Followed total of " + followedTotal + " accounts, across " + i + " urls";
+								var j=i+1;
+								var desc = "Code 81: Follow procedure completed successfully. Followed total of " + followedTotal + " accounts, across " + j + " urls";
 								writeLog("INFO",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
 								//close
 								closeFirefox();
@@ -319,7 +321,8 @@ function loop(i, followedTotal, urls) {
 								//if (SHOW_ALERTS) alert("No more urls. Logging finish with warnings and close.");
 								//no more urls
 								//log the follow procedure
-								var desc = "Code 82: Follow procedure completed with warnings. Followed total of " + followedTotal + " accounts, across " + i + " urls. The quota of " + MAX_FOLLOW_COUNT + " follows was not reached.";
+								var j=i+1;
+								var desc = "Code 82: Follow procedure completed with warnings. Followed total of " + followedTotal + " accounts, across " + j + " urls. The quota of " + MAX_FOLLOW_COUNT + " follows was not reached.";
 								writeLog("INFO",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
 								//close
 								closeFirefox();
@@ -330,7 +333,8 @@ function loop(i, followedTotal, urls) {
 						//alert("we are done. \nFollowedtotal = " + followedTotal + "\n FollowedThis = " + followedThis + "Log success and close");
 							//we are done.
 							//log a successful follow procedure
-							var desc = "Code 81: Follow procedure completed successfully. Followed total of " + followedTotal + " accounts, across " + i + " urls";
+							var j=i+1;
+							var desc = "Code 81: Follow procedure completed successfully. Followed total of " + followedTotal + " accounts, across " + j + " urls";
 							writeLog("INFO",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
 							//close
 							closeFirefox();
