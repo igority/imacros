@@ -377,10 +377,11 @@ function closeFirefox() {
 }
 
 function isLocked() {
-
+return false;
+/*
 	var load;
 	load =  "SET !TIMEOUT_STEP 0" + "\n";
-	load = "SET !EXTRACT null" + "\n";
+	load += "SET !EXTRACT null" + "\n";
 	load += "TAG POS=1 TYPE=DIV ATTR=CLASS:PageHeader&&TXT:* EXTRACT=TXT" + "\n";
 	iimPlayCode(load);
 	if (iimGetLastExtract().trim() == "Your account has been locked.") {
@@ -391,7 +392,7 @@ function isLocked() {
 		//alert("not locked");
 		return false;
 	}
-
+*/
 }
 
 function loadJQuery(url) {
