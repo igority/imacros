@@ -1,6 +1,6 @@
 /***********************************
 
- follow.js v0.50 beta
+ follow.js v0.51 beta
 
 ************************************/
 
@@ -28,15 +28,12 @@ var CSV_FOLDER = 'C:\\Tasks\\Csv';
 var URLS_FULL_PATH = CSV_FOLDER + '\\' + URLS_FILE;
 var LOG_FULL_PATH = CSV_FOLDER + '\\' + LOG_FILE;
 
-function closeFirefox() {
-	var myCode = 'WAIT SECONDS=1' + '\n';
-	var myCode = 'EVENT TYPE=KEYPRESS SELECTOR=* CHAR="w" MODIFIERS="ctrl,shift"';
-	iimPlayCode(myCode);
-}
-
-
 function follow() {
 	//alert("follow called.");
+	
+	load =  "CODE:";
+	load += 'URL GOTO="https://twitter.com"' + '\n';
+	iimPlay(load);
 	
 	if (!isLocked()) {
 			
@@ -143,66 +140,6 @@ function follow() {
 		closeFirefox();
 	}
 
-}
-
-function writeLog(profile,type,description,folder,file) {
-	iimSet("TYPE",type);
-	iimSet("PROFILE",profile);
-	iimSet("DESCRIPTION",description);
-	load =  "CODE:";
-	load +=  "SET !extract {{!NOW:ddmmyy_hhnnss}}" + "\n";
-	load +=  "ADD !extract {{PROFILE}}" + "\n";
-	load +=  "ADD !extract {{TYPE}}" + "\n";
-	load +=  "ADD !extract {{DESCRIPTION}}" + "\n";
-	load +=  'SAVEAS TYPE=EXTRACT FOLDER=' + folder + ' FILE=' + file + "\n";
-	//load +=  'WAIT SECONDS=0.1' + '\n';
-	iimPlay(load);
-}
-
-function sorturls(urls, lastLog) {
-/*	lastLog[0] contains the url of the last log; lastLog[1] contains timestamp value for the last log, we use this only to check if record exists
-* 	1. search through urls array for the lastLog[0] value. Note the index when found. if not found set index 0
-*	2. reverse the urls array, starting from the index+1 value to be 0 now
-*	3. Example: old array 0,1,2,3,4,5 	and	lastLog[0] has index 2 	=>	new array should be 3,2,1,0,5,4
-*/
-	var index = 0;
-	if (lastLog[1] == null) {
-		//at this point we can't find a record of a log url (either no log has been recorded, or an empty log is the last one). Just grab the first URL
-		index = 0;
-	} else {
-		//we have a URL in the log (lastLog[0]), now find that url in the array. if not found index will stay default 0
-
-		for (i=0;i<urls.length;i++) {
-			if (lastLog[0] == urls[i]) {
-				index = i;
-			}
-		}
-	}
-	
-	//we got the index, now do the sorting.
-	var tempUrls = [];
-	var newIndex;
-	for (i=0;i<urls.length;i++) {
-		//reverse:
-		newIndex = index+1-i;
-		//same order:
-		//newIndex = index+1;
-		if (newIndex < 0) {
-			newIndex += urls.length;
-			if (newIndex < 0) {
-				newIndex += urls.length;
-			}
-		}
-		if (newIndex >= urls.length) {
-			newIndex -= urls.length;
-			if (newIndex >= urls.length) {
-				newIndex -= urls.length;
-			}
-		}
-		tempUrls[i] = urls[newIndex];
-	}
-	
-	return tempUrls;
 }
 
 function loop(i, followedTotal, urls) {
@@ -373,21 +310,89 @@ function loop(i, followedTotal, urls) {
 
 }
 
-function isLocked() {
-	var load;
+function writeLog(profile,type,description,folder,file) {
+	iimSet("TYPE",type);
+	iimSet("PROFILE",profile);
+	iimSet("DESCRIPTION",description);
 	load =  "CODE:";
-	load =  "SET !TIMEOUT_STEP 0:" + "\n";
-	load +=  "SET !extract null" + "\n";
-	load +=  "TAG POS=1 TYPE=DIV ATTR=TXT:Your<SP>account<SP>has<SP>been<SP>locked. EXTRACT=TXT" + "\n";
+	load +=  "SET !extract {{!NOW:ddmmyy_hhnnss}}" + "\n";
+	load +=  "ADD !extract {{PROFILE}}" + "\n";
+	load +=  "ADD !extract {{TYPE}}" + "\n";
+	load +=  "ADD !extract {{DESCRIPTION}}" + "\n";
+	load +=  'SAVEAS TYPE=EXTRACT FOLDER=' + folder + ' FILE=' + file + "\n";
+	//load +=  'WAIT SECONDS=0.1' + '\n';
 	iimPlay(load);
+}
+
+function sorturls(urls, lastLog) {
+/*	lastLog[0] contains the url of the last log; lastLog[1] contains timestamp value for the last log, we use this only to check if record exists
+* 	1. search through urls array for the lastLog[0] value. Note the index when found. if not found set index 0
+*	2. reverse the urls array, starting from the index+1 value to be 0 now
+*	3. Example: old array 0,1,2,3,4,5 	and	lastLog[0] has index 2 	=>	new array should be 3,2,1,0,5,4
+*/
+	var index = 0;
+	if (lastLog[1] == null) {
+		//at this point we can't find a record of a log url (either no log has been recorded, or an empty log is the last one). Just grab the first URL
+		index = 0;
+	} else {
+		//we have a URL in the log (lastLog[0]), now find that url in the array. if not found index will stay default 0
+
+		for (i=0;i<urls.length;i++) {
+			if (lastLog[0] == urls[i]) {
+				index = i;
+			}
+		}
+	}
+	
+	//we got the index, now do the sorting.
+	var tempUrls = [];
+	var newIndex;
+	for (i=0;i<urls.length;i++) {
+		//reverse:
+		newIndex = index+1-i;
+		//same order:
+		//newIndex = index+1;
+		if (newIndex < 0) {
+			newIndex += urls.length;
+			if (newIndex < 0) {
+				newIndex += urls.length;
+			}
+		}
+		if (newIndex >= urls.length) {
+			newIndex -= urls.length;
+			if (newIndex >= urls.length) {
+				newIndex -= urls.length;
+			}
+		}
+		tempUrls[i] = urls[newIndex];
+	}
+	
+	return tempUrls;
+}
+
+function closeFirefox() {
+	var myCode = 'WAIT SECONDS=1' + '\n';
+	var myCode = 'EVENT TYPE=KEYPRESS SELECTOR=* CHAR="w" MODIFIERS="ctrl,shift"';
+	iimPlayCode(myCode);
+}
+
+function isLocked() {
+
+	var load;
+	load =  "SET !TIMEOUT_STEP 0" + "\n";
+	load = "SET !EXTRACT null" + "\n";
+	load += "TAG POS=1 TYPE=DIV ATTR=CLASS:PageHeader&&TXT:* EXTRACT=TXT" + "\n";
+	iimPlayCode(load);
 	if (SHOW_ALERTS) alert("iimGetLastExtract()=" + iimGetLastExtract() + "\n" + "iimGetLastExtract(0)=" + iimGetLastExtract(0) + "\n" + "iimGetLastExtract(1)=" + iimGetLastExtract(1) + "\n" + "iimGetLastExtract(2)=" + iimGetLastExtract(2));
-	if (iimGetLastExtract(1) == null || iimGetLastExtract(1) == '#EANF#') {
+	if (iimGetLastExtract().trim() == "Your account has been locked.") {
+		//alert("account is locked!!!");
+		return true; 
+
+	} else { 
 		//alert("not locked");
 		return false;
-	} else {
-		//alert("account is locked!!!");
-		return true;
 	}
+
 }
 
 function loadJQuery(url) {
