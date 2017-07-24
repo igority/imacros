@@ -1,6 +1,6 @@
 /***********************************
 
- follow.js v0.53 beta
+ follow.js v0.54 beta
 
 ************************************/
 
@@ -33,19 +33,19 @@ var LOG_FULL_PATH = CSV_FOLDER + '\\' + LOG_FILE;
 function follow() {
 	//alert("follow called.");
 	
+	var i=1;
+	var urls = [];
+	var lastLog;
+	var load;
+	var value;
+	var prevValue;
+	var followURL;
+	
 	load =  "CODE:";
 	load += 'URL GOTO="https://twitter.com"' + '\n';
 	iimPlay(load);
 	
 	if (!isLocked()) {
-			
-		var i=1;
-		var urls = [];
-		var lastLog;
-		var load;
-		var value;
-		var prevValue;
-		var followURL;
 
 		//=======
 		//1. get an array of all urls
