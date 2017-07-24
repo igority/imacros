@@ -1,5 +1,5 @@
 /***********************************
- unfollow.js v0.51 beta
+ unfollow.js v0.52 beta
 ************************************/
 
 /*	
@@ -86,8 +86,8 @@ function unfollow() {
 			iimSet("DESCRIPTION","Code 32: Unsuccessful try for Unfollow [" + tryCount + "/" + RETRIES + "]");
 			load =  "CODE:";
 			load +=  "SET !extract {{!NOW:ddmmyy_hhnnss}}" + "\n";
-			load +=  "ADD !extract {{PROFILE}}" + "\n";
 			load +=  "ADD !extract {{TYPE}}" + "\n";
+			load +=  "ADD !extract {{PROFILE}}" + "\n";
 			load +=  "ADD !extract {{DESCRIPTION}}" + "\n";
 			load +=  'SAVEAS TYPE=EXTRACT FOLDER=' + GLOBAL_ERROR_LOGS_FOLDER + ' FILE=' + GLOBAL_ERROR_LOGS_FILE + "\n";
 			load +=  'WAIT SECONDS=3' + '\n';
@@ -103,8 +103,8 @@ function unfollow() {
 		iimSet("DESCRIPTION","Code 02: Unable to Unfollow after " + RETRIES + " retries");
 		load =  "CODE:";
 		load +=  "SET !extract {{!NOW:ddmmyy_hhnnss}}" + "\n";
-		load +=  "ADD !extract {{PROFILE}}" + "\n";
 		load +=  "ADD !extract {{TYPE}}" + "\n";
+		load +=  "ADD !extract {{PROFILE}}" + "\n";
 		load +=  "ADD !extract {{DESCRIPTION}}" + "\n";
 		load +=  'SAVEAS TYPE=EXTRACT FOLDER=' + GLOBAL_ERROR_LOGS_FOLDER + ' FILE=' + GLOBAL_ERROR_LOGS_FILE + "\n";
 		iimPlay(load);
@@ -150,8 +150,8 @@ function unfollow() {
 				iimSet("DESCRIPTION","Code 99: Unfollowed " + unfollowedCount  + " people successfully.");
 				load =  "CODE:";
 				load +=  "SET !extract {{!NOW:ddmmyy_hhnnss}}" + "\n";
-				load +=  "ADD !extract {{PROFILE}}" + "\n";
 				load +=  "ADD !extract {{TYPE}}" + "\n";
+				load +=  "ADD !extract {{PROFILE}}" + "\n";
 				load +=  "ADD !extract {{DESCRIPTION}}" + "\n";
 				load +=  'SAVEAS TYPE=EXTRACT FOLDER=' + GLOBAL_INFO_LOGS_FOLDER + ' FILE=' + GLOBAL_INFO_LOGS_FILE + "\n";
 				iimPlay(load);
