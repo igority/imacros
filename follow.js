@@ -1,7 +1,5 @@
 /***********************************
-
- follow.js v0.54 beta
-
+ follow.js v1.0
 ************************************/
 
 //global parameters with default values.
