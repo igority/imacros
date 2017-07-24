@@ -17,19 +17,17 @@ var GLOBAL_ERROR_LOGS_FILE = 'global_error_log.csv';
 
 var GLOBAL_INFO_LOGS_FOLDER = 'C:\\Tasks\\GlobalLogs';
 var GLOBAL_INFO_LOGS_FILE = 'global_info_log.csv';
-
-var LOG_FILE = PROFILE + 'log.csv';
-var URLS_FILE = PROFILE + 'urls.csv';
-
 var CSV_FOLDER = 'C:\\Tasks\\Csv';
-
-var URLS_FULL_PATH = CSV_FOLDER + '\\' + URLS_FILE;
-var LOG_FULL_PATH = CSV_FOLDER + '\\' + LOG_FILE;
 
 //follow();
 
 function follow() {
 	//alert("follow called.");
+
+	LOG_FILE = PROFILE + 'log.csv';
+	URLS_FILE = PROFILE + 'urls.csv';
+	URLS_FULL_PATH = CSV_FOLDER + '\\' + URLS_FILE;
+	LOG_FULL_PATH = CSV_FOLDER + '\\' + LOG_FILE;
 	
 	var i=1;
 	var urls = [];
