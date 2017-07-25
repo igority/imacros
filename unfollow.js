@@ -1,5 +1,5 @@
 /***********************************
- unfollow.js v1.04
+ unfollow.js v1.04a
 ************************************/
 
 /*	
@@ -30,7 +30,7 @@ var GLOBAL_ERROR_LOGS_FILE = 'global_error_log.csv';
 var GLOBAL_INFO_LOGS_FOLDER = 'C:\\Tasks\\GlobalLogs';
 var GLOBAL_INFO_LOGS_FILE = 'global_info_log.csv';
 
-unfollow();
+//unfollow();
 
 function unfollow() {
 
