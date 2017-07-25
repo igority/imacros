@@ -1,5 +1,5 @@
 /***********************************
- follow.js v1.05
+ follow.js v1.06
 ************************************/
 
 //global parameters with default values.
@@ -189,6 +189,7 @@ function follow() {
 				desc = "Code 10: The account is maybe locked or suspended. Type of lock not recognized, manual check required!";
 		}
 		writeLog("ERROR",PROFILE,desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
+		writeLog("ERROR",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
 		closeFirefox();
 	}
 
@@ -213,6 +214,7 @@ function loop(i, followedTotal, urls) {
 		//log a warning for the invalid url
 		desc = "Code 31: " + urls[i] + " is not a valid url!";
 		writeLog("WARNING",PROFILE,desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
+		writeLog("WARNING",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
 			var lockedCheck = isLocked();
 			if (!lockedCheck) {
 				if (i<urls.length) {
@@ -250,6 +252,7 @@ function loop(i, followedTotal, urls) {
 						desc = "Code 10: The account is maybe locked or suspended. Type of lock not recognized, manual check required!";
 				}
 				writeLog("ERROR",PROFILE,desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
+				writeLog("ERROR",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
 				closeFirefox();
 			}
 
@@ -324,6 +327,7 @@ function loop(i, followedTotal, urls) {
 								}
 								
 								writeLog("ERROR",PROFILE,desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
+								writeLog("ERROR",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
 								closeFirefox();
 							} else {
 							var j=i+1;
@@ -378,6 +382,7 @@ function loop(i, followedTotal, urls) {
 								desc = "Code 10: The account is maybe locked or suspended. Type of lock not recognized, manual check required!";
 						}
 						writeLog("ERROR",PROFILE,desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
+						writeLog("ERROR",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
 						closeFirefox();
 					} else {
 					//log following
