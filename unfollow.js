@@ -1,5 +1,5 @@
 /***********************************
- unfollow.js v1.05
+ unfollow.js v1.06
 ************************************/
 
 /*	
@@ -78,7 +78,7 @@ function unfollow() {
 			wait++;
 		}
 			
-		if (wait < MAX_WAIT_STEPS ) {
+		if (value != '#EANF#') {
 			success = true;
 		} else  {
 			success = false;
@@ -91,7 +91,7 @@ function unfollow() {
 
 	}
 
-	if (tryCount >= RETRIES) {
+	if (!success) {
 		//log an error for unsuccessful unfollow, and close
 		iimSet("TYPE","ERROR");
 		iimSet("PROFILE",PROFILE);
@@ -122,6 +122,7 @@ function unfollow() {
 		//check number of accounts available for unfollow. 
 		var valueInt;
 		load =  "CODE:";
+		load += "WAIT SECONDS=" + STEP_TIME + "\n";  
 		load +=  "SET !EXTRACT NULL" + "\n"; 
 		load +=  "SET !TIMEOUT_STEP 0" + "\n"; 
 		load +=  'TAG XPATH="//div[@id=\'twitPrompt\']/b[1]" EXTRACT=TXT' + "\n";
@@ -130,77 +131,125 @@ function unfollow() {
 		if (SHOW_ALERTS) alert(valueInt);
 		
 		//log this number and proceed to unfollow. Show a warning if this number is < than the account intended for unfollow.
-		if ( valueInt == 'NaN' || valueInt == null || valueInt == '#EANF#' || valueInt < MASS_UNFOLLOWS_COUNT*100) {
-			var desc = "Code 33: Not enough accounts to unfollow, or error while retrieving number of accounts. Available: " + valueInt + ", intended to unfollow: " + MASS_UNFOLLOWS_COUNT*100;
-			writeLog(PROFILE,"WARNING",desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
-			writeLog(PROFILE,"WARNING",desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
+		var count = 0;
+		while (isNaN(valueInt) && count < MAX_WAIT_STEPS) {
+			load =  "CODE:";
+			load += "WAIT SECONDS=" + STEP_TIME + "\n";  
+			load +=  "SET !EXTRACT NULL" + "\n"; 
+			load +=  "SET !TIMEOUT_STEP 0" + "\n"; 
+			load +=  'TAG XPATH="//div[@id=\'twitPrompt\']/b[1]" EXTRACT=TXT' + "\n";
+			iimPlay(load);
+			valueInt = parseInt(iimGetLastExtract(1).replace(',',''));
+			if (SHOW_ALERTS) alert(valueInt);
+
+			count++;
 		}
 		
-		//log unfollow initiation
-		var desc = "Code 96: Initiating unfollow procedure. Found " + valueInt + " accounts for unfollowing, intended to unfollow: " + MASS_UNFOLLOWS_COUNT*100;
-		writeLog(PROFILE,"INFO",desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
-		
-		
-		//do the unfollow
-		//order from oldest to newest
-		var load =  "CODE:";
-		load +=  'EVENT TYPE=CLICK SELECTOR="#control-order" BUTTON=0' + '\n'; 
-		load +=  "WAIT SECONDS=3" + "\n"; 
-		load +=  'EVENT TYPE=CLICK SELECTOR="#order_followed" BUTTON=0' + '\n'; 
-		 
-		iimPlay(load);
-
-		loadJQuery('https://raw.githubusercontent.com/igority/imacros/master/jq.for.im.js');			
-			$ = window.$,
-			JQuery = window.JQuery;
-
-			var unfollowedCount = 0;
-			for (i = 0; i < MASS_UNFOLLOWS_COUNT; i++) {
-				window.setTimeout(
-					function () {
-						if (!TEST_MODE) window.$(".Unfollow").trigger("click");
-						unfollowedCount = unfollowedCount + 100;
-					},
-					MASS_UNFOLLOW_DELAY*(i+1)
-				);
+		if (isNaN(valueInt)) {
+			var desc = "Code 34: Couldn't retrieve value for number of available accounts to unfollow. Nevertheless, trying to unfollow...";
+			writeLog(PROFILE,"WARNING",desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
+			writeLog(PROFILE,"WARNING",desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
+		} else {
+			if (valueInt < MASS_UNFOLLOWS_COUNT*100) {
+			var desc = "Code 33: Not enough accounts to unfollow. Available: " + valueInt + ", intended to unfollow: " + MASS_UNFOLLOWS_COUNT*100;
+			writeLog(PROFILE,"WARNING",desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
+			writeLog(PROFILE,"WARNING",desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
 			}
-			
-			
-		window.setTimeout(
-			function () {
-				//get number of unfollowed
-				//write a log
-				load =  "CODE:";
-				load +=  "SET !EXTRACT NULL" + "\n"; 
-				load +=  "SET !TIMEOUT_STEP 0" + "\n"; 
-				load +=  "TAG POS=1 TYPE=SPAN ATTR=CLASS:total EXTRACT=TXT" + "\n";
-				iimPlay(load);
-				var actualUnfollowCount = iimGetLastExtract(1);
-				if (actualUnfollowCount == null || actualUnfollowCount == '#EANF#') {
-					//log an error
-					var desc = "Code 04: Unfollowing failed! Couldn't retrieve info about unfollowed accounts, most likely none are unfollowed.";
-					writeLog(PROFILE,"ERROR",desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
-					writeLog(PROFILE,"ERROR",desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
-					actualUnfollowCount = 0;
-				} else {
-					var desc = "Code 99: Unfollowed " + actualUnfollowCount  + " people successfully.";
-					writeLog(PROFILE,"INFO",desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
-				}
-
-
-			},
-			MASS_UNFOLLOW_DELAY*(MASS_UNFOLLOWS_COUNT+1)
-		);
-
-
-		window.setTimeout(
-			function () {
-				//close firefox
-				closeFirefox()
-			},
-			MASS_UNFOLLOW_DELAY*(MASS_UNFOLLOWS_COUNT+2)
-		);
+		}
 		
+		//check if Unfollow button is there for the first one. wait a bit to load if it isnt present
+		load =  "CODE:";
+		load +=  "set !EXTRACT null" + "\n"; 
+		load += 'TAG XPATH="id(\'userRows\')/div[1]/div[1]/button[1]" EXTRACT=TXT' + '\n';
+		iimPlay(load);
+		value2 = iimGetLastExtract(1);
+		var count2 = 0;
+		while (value2 != 'Unfollow' && count2 < MAX_WAIT_STEPS) {
+			load =  "CODE:";
+			load += "WAIT SECONDS=" + STEP_TIME + "\n"; 
+			load +=  "set !EXTRACT null" + "\n"; 
+			load += 'TAG XPATH="id(\'userRows\')/div[1]/div[1]/button[1]" EXTRACT=TXT' + '\n';
+			iimPlay(load);
+			value2 = iimGetLastExtract(1);
+			count2++;
+		}
+
+		if (value2 != "Unfollow") {
+			//no Unfollow button found. Obviously we can't unfollow, so log error and close
+			var desc = "Code 05: Couldn't detect a single Unfollow button. Either page timed out or something else is wrong. Manual check is required.";
+			writeLog(PROFILE,"ERROR",desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
+			writeLog(PROFILE,"ERROR",desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
+			closeFirefox();
+		} else {
+		
+
+			
+			//log unfollow initiation
+			var desc = "Code 96: Initiating unfollow procedure. Found " + valueInt + " accounts for unfollowing, intended to unfollow: " + MASS_UNFOLLOWS_COUNT*100;
+			writeLog(PROFILE,"INFO",desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
+			
+			
+			//do the unfollow
+			//order from oldest to newest
+			var load =  "CODE:";
+			load +=  'EVENT TYPE=CLICK SELECTOR="#control-order" BUTTON=0' + '\n'; 
+			load +=  "WAIT SECONDS=3" + "\n"; 
+			load +=  'EVENT TYPE=CLICK SELECTOR="#order_followed" BUTTON=0' + '\n'; 
+			 
+			iimPlay(load);
+
+			loadJQuery('https://raw.githubusercontent.com/igority/imacros/master/jq.for.im.js');			
+				$ = window.$,
+				JQuery = window.JQuery;
+
+				var unfollowedCount = 0;
+				for (i = 0; i < MASS_UNFOLLOWS_COUNT; i++) {
+					window.setTimeout(
+						function () {
+							if (!TEST_MODE) window.$(".Unfollow").trigger("click");
+							unfollowedCount = unfollowedCount + 100;
+						},
+						MASS_UNFOLLOW_DELAY*(i+1)
+					);
+				}
+				
+				
+			window.setTimeout(
+				function () {
+					//get number of unfollowed
+					//write a log
+					load =  "CODE:";
+					load +=  "SET !EXTRACT NULL" + "\n"; 
+					load +=  "SET !TIMEOUT_STEP 0" + "\n"; 
+					load +=  "TAG POS=1 TYPE=SPAN ATTR=CLASS:total EXTRACT=TXT" + "\n";
+					iimPlay(load);
+					var actualUnfollowCount = iimGetLastExtract(1);
+					if (actualUnfollowCount == null || actualUnfollowCount == '#EANF#') {
+						//log an error
+						var desc = "Code 04: Unfollowing failed! Couldn't retrieve info about unfollowed accounts, most likely none are unfollowed.";
+						writeLog(PROFILE,"ERROR",desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
+						writeLog(PROFILE,"ERROR",desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
+						actualUnfollowCount = 0;
+					} else {
+						var desc = "Code 99: Unfollowed " + actualUnfollowCount  + " people successfully.";
+						writeLog(PROFILE,"INFO",desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
+					}
+
+
+				},
+				MASS_UNFOLLOW_DELAY*(MASS_UNFOLLOWS_COUNT+1)
+			);
+
+
+			window.setTimeout(
+				function () {
+					//close firefox
+					closeFirefox()
+				},
+				MASS_UNFOLLOW_DELAY*(MASS_UNFOLLOWS_COUNT+2)
+			);
+		}
+			
 	}
 }
 
