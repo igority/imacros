@@ -1,5 +1,5 @@
 /***********************************
- unfollow.js v1.00
+ unfollow.js v1.02
 ************************************/
 
 /*	
@@ -8,6 +8,7 @@
 *	Go to Unfollow
 *	Order ascending
 *	Click them all (multiple times, with delay)
+*	close firefox
 */	
 
 var PROFILE;
@@ -110,8 +111,13 @@ function unfollow() {
 		iimPlay(load);
 			window.setTimeout(
 			function () {
+			/*
 				//continue with follow
 				iimPlayCode("URL GOTO=imacros://run/?m=Follow%5C" + PROFILE + "following.js");
+				*/
+				
+				//close firefox
+				closeFirefox();
 			},
 			MASS_UNFOLLOW_DELAY
 		);
@@ -162,13 +168,24 @@ function unfollow() {
 
 		window.setTimeout(
 			function () {
+			/*
 				//continue with follow
 				iimPlayCode("URL GOTO=imacros://run/?m=Follow%5C" + PROFILE + "following.js");
+				*/
+				//close firefox
+				closeFirefox()
+}
 			},
 			MASS_UNFOLLOW_DELAY*(MASS_UNFOLLOWS_COUNT+2)
 		);
 		
 	}
+}
+
+function closeFirefox() {
+	var myCode = 'WAIT SECONDS=1' + '\n';
+	var myCode = 'EVENT TYPE=KEYPRESS SELECTOR=* CHAR="w" MODIFIERS="ctrl,shift"';
+	iimPlayCode(myCode);
 }
 
 function loadJQuery(url) {
