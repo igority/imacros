@@ -1,5 +1,5 @@
 /***********************************
- unfollow.js v1.00
+ unfollow.js v1.01
 ************************************/
 
 /*	
@@ -81,33 +81,18 @@ function unfollow() {
 			success = false;
 			
 			//log a warning for unsuccessful try
-			iimSet("TYPE","WARNING");
-			iimSet("PROFILE",PROFILE);
-			iimSet("DESCRIPTION","Code 32: Unsuccessful try for Unfollow [" + tryCount + "/" + RETRIES + "]");
-			load =  "CODE:";
-			load +=  "SET !extract {{!NOW:ddmmyy_hhnnss}}" + "\n";
-			load +=  "ADD !extract {{TYPE}}" + "\n";
-			load +=  "ADD !extract {{PROFILE}}" + "\n";
-			load +=  "ADD !extract {{DESCRIPTION}}" + "\n";
-			load +=  'SAVEAS TYPE=EXTRACT FOLDER=' + GLOBAL_ERROR_LOGS_FOLDER + ' FILE=' + GLOBAL_ERROR_LOGS_FILE + "\n";
-			load +=  'WAIT SECONDS=3' + '\n';
-			iimPlay(load);
+			var desc = "Code 32: Unsuccessful try for Unfollow [" + tryCount + "/" + RETRIES + "]";
+			writeLog(PROFILE,"WARNING",desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
+			writeLog(PROFILE,"WARNING",desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
 		}
 
 	}
 
 	if (tryCount >= RETRIES) {
 		//log an error for unsuccessful unfollow, and proceed to follow
-		iimSet("TYPE","ERROR");
-		iimSet("PROFILE",PROFILE);
-		iimSet("DESCRIPTION","Code 02: Unable to Unfollow after " + RETRIES + " retries");
-		load =  "CODE:";
-		load +=  "SET !extract {{!NOW:ddmmyy_hhnnss}}" + "\n";
-		load +=  "ADD !extract {{TYPE}}" + "\n";
-		load +=  "ADD !extract {{PROFILE}}" + "\n";
-		load +=  "ADD !extract {{DESCRIPTION}}" + "\n";
-		load +=  'SAVEAS TYPE=EXTRACT FOLDER=' + GLOBAL_ERROR_LOGS_FOLDER + ' FILE=' + GLOBAL_ERROR_LOGS_FILE + "\n";
-		iimPlay(load);
+		var desc = "Code 02: Unable to Unfollow after " + RETRIES + " retries";
+		writeLog(PROFILE,"ERROR",desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
+		writeLog(PROFILE,"ERROR",desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
 			window.setTimeout(
 			function () {
 				//continue with follow
@@ -145,16 +130,8 @@ function unfollow() {
 		window.setTimeout(
 			function () {
 				//write successful unfollow log 
-				iimSet("TYPE","INFO");
-				iimSet("PROFILE",PROFILE);
-				iimSet("DESCRIPTION","Code 99: Unfollowed " + unfollowedCount  + " people successfully.");
-				load =  "CODE:";
-				load +=  "SET !extract {{!NOW:ddmmyy_hhnnss}}" + "\n";
-				load +=  "ADD !extract {{TYPE}}" + "\n";
-				load +=  "ADD !extract {{PROFILE}}" + "\n";
-				load +=  "ADD !extract {{DESCRIPTION}}" + "\n";
-				load +=  'SAVEAS TYPE=EXTRACT FOLDER=' + GLOBAL_INFO_LOGS_FOLDER + ' FILE=' + GLOBAL_INFO_LOGS_FILE + "\n";
-				iimPlay(load);
+				var desc = "Code 99: Unfollowed " + unfollowedCount  + " people successfully.";
+				writeLog(PROFILE,"INFO",desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
 			},
 			MASS_UNFOLLOW_DELAY*(MASS_UNFOLLOWS_COUNT+1)
 		);
@@ -183,4 +160,18 @@ function loadJQuery(url) {
 	}
 	eval(request.response);
 	return true;
+}
+
+function writeLog(profile,type,description,folder,file) {
+	iimSet("TYPE",type);
+	iimSet("PROFILE",profile);
+	iimSet("DESCRIPTION",description);
+	load =  "CODE:";
+	load +=  "SET !extract {{!NOW:ddmmyy_hhnnss}}" + "\n";
+	load +=  "ADD !extract {{PROFILE}}" + "\n";
+	load +=  "ADD !extract {{TYPE}}" + "\n";
+	load +=  "ADD !extract {{DESCRIPTION}}" + "\n";
+	load +=  'SAVEAS TYPE=EXTRACT FOLDER=' + folder + ' FILE=' + file + "\n";
+	//load +=  'WAIT SECONDS=0.1' + '\n';
+	iimPlay(load);
 }
