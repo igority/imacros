@@ -1,5 +1,5 @@
 /***********************************
- unfollow.js v1.02
+ unfollow.js v1.03
 ************************************/
 
 /*	
@@ -29,6 +29,8 @@ var GLOBAL_ERROR_LOGS_FILE = 'global_error_log.csv';
 
 var GLOBAL_INFO_LOGS_FOLDER = 'C:\\Tasks\\GlobalLogs';
 var GLOBAL_INFO_LOGS_FILE = 'global_info_log.csv';
+
+unfollow();
 
 function unfollow() {
 
@@ -82,6 +84,7 @@ function unfollow() {
 			success = false;
 			
 			//log a warning for unsuccessful try
+			/*
 			iimSet("TYPE","WARNING");
 			iimSet("PROFILE",PROFILE);
 			iimSet("DESCRIPTION","Code 32: Unsuccessful try for Unfollow [" + tryCount + "/" + RETRIES + "]");
@@ -93,12 +96,16 @@ function unfollow() {
 			load +=  'SAVEAS TYPE=EXTRACT FOLDER=' + GLOBAL_ERROR_LOGS_FOLDER + ' FILE=' + GLOBAL_ERROR_LOGS_FILE + "\n";
 			load +=  'WAIT SECONDS=3' + '\n';
 			iimPlay(load);
+			*/
+			var desc = "Code 32: Unsuccessful try for Unfollow [" + tryCount + "/" + RETRIES + "]";
+			writeLog(PROFILE,"WARNING",desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
+			writeLog(PROFILE,"WARNING",desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
 		}
 
 	}
 
 	if (tryCount >= RETRIES) {
-		//log an error for unsuccessful unfollow, and proceed to follow
+		//log an error for unsuccessful unfollow, and close
 		iimSet("TYPE","ERROR");
 		iimSet("PROFILE",PROFILE);
 		iimSet("DESCRIPTION","Code 02: Unable to Unfollow after " + RETRIES + " retries");
@@ -124,7 +131,30 @@ function unfollow() {
 		
 	} else {
 		
-		//all good! do the unfollow
+		//all good! 
+		//check number of accounts available for unfollow. 
+		var valueInt;
+		load =  "CODE:";
+		load +=  "SET !EXTRACT NULL" + "\n"; 
+		load +=  "SET !TIMEOUT_STEP 0" + "\n"; 
+		load +=  'TAG XPATH="//div[@id=\'twitPrompt\']/b[1]" EXTRACT=TXT' + "\n";
+		iimPlay(load);
+		valueInt = parseInt(iimGetLastExtract(1).replace(',',''));
+		if (SHOW_ALERTS) alert(valueInt);
+		
+		//log this number and proceed to unfollow. Show a warning if this number is < than the account intended for unfollow.
+		if ( valueInt == 'NaN' || valueInt == null || valueInt == '#EANF#' || valueInt < MASS_UNFOLLOWS_COUNT*100) {
+			var desc = "Code 33: Not enough accounts to unfollow, or error while retrieving number of accounts. Available: " + valueInt + ", intended to unfollow: " + MASS_UNFOLLOWS_COUNT*100;
+			writeLog(PROFILE,"WARNING",desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
+			writeLog(PROFILE,"WARNING",desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
+		}
+		
+		//log unfollow initiation
+		var desc = "Code 96: Initiating unfollow procedure. Found " + valueInt + " accounts for unfollowing, intended to unfollow: " + MASS_UNFOLLOWS_COUNT*100;
+		writeLog(PROFILE,"INFO",desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
+		
+		
+		//do the unfollow
 		
 		load +=  'EVENT TYPE=CLICK SELECTOR="#control-order" BUTTON=0' + '\n'; 
 		load +=  "WAIT SECONDS=3" + "\n"; 
@@ -151,6 +181,7 @@ function unfollow() {
 		window.setTimeout(
 			function () {
 				//write successful unfollow log 
+				/*
 				iimSet("TYPE","INFO");
 				iimSet("PROFILE",PROFILE);
 				iimSet("DESCRIPTION","Code 99: Unfollowed " + unfollowedCount  + " people successfully.");
@@ -161,6 +192,9 @@ function unfollow() {
 				load +=  "ADD !extract {{DESCRIPTION}}" + "\n";
 				load +=  'SAVEAS TYPE=EXTRACT FOLDER=' + GLOBAL_INFO_LOGS_FOLDER + ' FILE=' + GLOBAL_INFO_LOGS_FILE + "\n";
 				iimPlay(load);
+				*/
+				var desc = "Code 99: Unfollowed " + unfollowedCount  + " people successfully.";
+				writeLog(PROFILE,"INFO",desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
 			},
 			MASS_UNFOLLOW_DELAY*(MASS_UNFOLLOWS_COUNT+1)
 		);
@@ -174,12 +208,25 @@ function unfollow() {
 				*/
 				//close firefox
 				closeFirefox()
-}
 			},
 			MASS_UNFOLLOW_DELAY*(MASS_UNFOLLOWS_COUNT+2)
 		);
 		
 	}
+}
+
+function writeLog(profile,type,description,folder,file) {
+	iimSet("TYPE",type);
+	iimSet("PROFILE",profile);
+	iimSet("DESCRIPTION",description);
+	load =  "CODE:";
+	load +=  "SET !extract {{!NOW:ddmmyy_hhnnss}}" + "\n";
+	load +=  "ADD !extract {{PROFILE}}" + "\n";
+	load +=  "ADD !extract {{TYPE}}" + "\n";
+	load +=  "ADD !extract {{DESCRIPTION}}" + "\n";
+	load +=  'SAVEAS TYPE=EXTRACT FOLDER=' + folder + ' FILE=' + file + "\n";
+	//load +=  'WAIT SECONDS=0.1' + '\n';
+	iimPlay(load);
 }
 
 function closeFirefox() {
