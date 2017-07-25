@@ -1,5 +1,5 @@
 /***********************************
- unfollow.js v1.03
+ unfollow.js v1.04
 ************************************/
 
 /*	
@@ -84,19 +84,6 @@ function unfollow() {
 			success = false;
 			
 			//log a warning for unsuccessful try
-			/*
-			iimSet("TYPE","WARNING");
-			iimSet("PROFILE",PROFILE);
-			iimSet("DESCRIPTION","Code 32: Unsuccessful try for Unfollow [" + tryCount + "/" + RETRIES + "]");
-			load =  "CODE:";
-			load +=  "SET !extract {{!NOW:ddmmyy_hhnnss}}" + "\n";
-			load +=  "ADD !extract {{TYPE}}" + "\n";
-			load +=  "ADD !extract {{PROFILE}}" + "\n";
-			load +=  "ADD !extract {{DESCRIPTION}}" + "\n";
-			load +=  'SAVEAS TYPE=EXTRACT FOLDER=' + GLOBAL_ERROR_LOGS_FOLDER + ' FILE=' + GLOBAL_ERROR_LOGS_FILE + "\n";
-			load +=  'WAIT SECONDS=3' + '\n';
-			iimPlay(load);
-			*/
 			var desc = "Code 32: Unsuccessful try for Unfollow [" + tryCount + "/" + RETRIES + "]";
 			writeLog(PROFILE,"WARNING",desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
 			writeLog(PROFILE,"WARNING",desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
@@ -155,7 +142,8 @@ function unfollow() {
 		
 		
 		//do the unfollow
-		
+		//order from oldest to newest
+		var load =  "CODE:";
 		load +=  'EVENT TYPE=CLICK SELECTOR="#control-order" BUTTON=0' + '\n'; 
 		load +=  "WAIT SECONDS=3" + "\n"; 
 		load +=  'EVENT TYPE=CLICK SELECTOR="#order_followed" BUTTON=0' + '\n'; 
@@ -180,21 +168,26 @@ function unfollow() {
 			
 		window.setTimeout(
 			function () {
-				//write successful unfollow log 
-				/*
-				iimSet("TYPE","INFO");
-				iimSet("PROFILE",PROFILE);
-				iimSet("DESCRIPTION","Code 99: Unfollowed " + unfollowedCount  + " people successfully.");
+				//get number of unfollowed
+				//write a log
 				load =  "CODE:";
-				load +=  "SET !extract {{!NOW:ddmmyy_hhnnss}}" + "\n";
-				load +=  "ADD !extract {{TYPE}}" + "\n";
-				load +=  "ADD !extract {{PROFILE}}" + "\n";
-				load +=  "ADD !extract {{DESCRIPTION}}" + "\n";
-				load +=  'SAVEAS TYPE=EXTRACT FOLDER=' + GLOBAL_INFO_LOGS_FOLDER + ' FILE=' + GLOBAL_INFO_LOGS_FILE + "\n";
+				load +=  "SET !EXTRACT NULL" + "\n"; 
+				load +=  "SET !TIMEOUT_STEP 0" + "\n"; 
+				load +=  "TAG POS=1 TYPE=SPAN ATTR=CLASS:total EXTRACT=TXT" + "\n";
 				iimPlay(load);
-				*/
-				var desc = "Code 99: Unfollowed " + unfollowedCount  + " people successfully.";
-				writeLog(PROFILE,"INFO",desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
+				var actualUnfollowCount = iimGetLastExtract(1);
+				if (actualUnfollowCount == null || actualUnfollowCount == '#EANF#') {
+					//log an error
+					var desc = "Code 04: Unfollowing failed! Couldn't retrieve info about unfollowed accounts, most likely none are unfollowed.";
+					writeLog(PROFILE,"ERROR",desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
+					writeLog(PROFILE,"ERROR",desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
+					actualUnfollowCount = 0;
+				} else {
+					var desc = "Code 99: Unfollowed " + actualUnfollowCount  + " people successfully.";
+					writeLog(PROFILE,"INFO",desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
+				}
+
+
 			},
 			MASS_UNFOLLOW_DELAY*(MASS_UNFOLLOWS_COUNT+1)
 		);
@@ -202,10 +195,6 @@ function unfollow() {
 
 		window.setTimeout(
 			function () {
-			/*
-				//continue with follow
-				iimPlayCode("URL GOTO=imacros://run/?m=Follow%5C" + PROFILE + "following.js");
-				*/
 				//close firefox
 				closeFirefox()
 			},
