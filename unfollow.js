@@ -1,5 +1,5 @@
 /***********************************
- unfollow.js v1.06
+ unfollow.js v1.07
 ************************************/
 
 /*	
@@ -93,16 +93,10 @@ function unfollow() {
 
 	if (!success) {
 		//log an error for unsuccessful unfollow, and close
-		iimSet("TYPE","ERROR");
-		iimSet("PROFILE",PROFILE);
-		iimSet("DESCRIPTION","Code 02: Unable to Unfollow after " + RETRIES + " retries");
-		load =  "CODE:";
-		load +=  "SET !extract {{!NOW:ddmmyy_hhnnss}}" + "\n";
-		load +=  "ADD !extract {{TYPE}}" + "\n";
-		load +=  "ADD !extract {{PROFILE}}" + "\n";
-		load +=  "ADD !extract {{DESCRIPTION}}" + "\n";
-		load +=  'SAVEAS TYPE=EXTRACT FOLDER=' + GLOBAL_ERROR_LOGS_FOLDER + ' FILE=' + GLOBAL_ERROR_LOGS_FILE + "\n";
-		iimPlay(load);
+		var desc = "Code 02: Unable to Unfollow after " + RETRIES + " retries";
+		writeLog(PROFILE,"WARNING",desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
+		writeLog(PROFILE,"WARNING",desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
+
 			window.setTimeout(
 			function () {
 			/*
@@ -268,9 +262,11 @@ function writeLog(profile,type,description,folder,file) {
 }
 
 function closeFirefox() {
-	var myCode = 'WAIT SECONDS=1' + '\n';
-	var myCode = 'EVENT TYPE=KEYPRESS SELECTOR=* CHAR="w" MODIFIERS="ctrl,shift"';
-	iimPlayCode(myCode);
+	if (SHOW_ALERTS) alert("closing firefox ...");
+	var load = "CODE:";
+	load += 'WAIT SECONDS=1' + '\n';
+	load += 'EVENT TYPE=KEYPRESS SELECTOR=* CHAR="w" MODIFIERS="ctrl,shift"';
+	iimPlay(load);
 }
 
 function loadJQuery(url) {
