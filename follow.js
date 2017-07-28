@@ -1,5 +1,5 @@
 /***********************************
- follow.js v1.08
+ follow.js v1.09
 ************************************/
 
 //global parameters with default values.
@@ -119,7 +119,7 @@ function follow() {
 			load +=  'TAG XPATH="id(\'page-container\')/div[1]/div[1]/div/div[2]/ul/li[3]/a/span[2]" EXTRACT=TXT' + '\n';
 			iimPlay(load);
 			desc = "Code 95: Stats before follow: Tweets: " + iimGetLastExtract(1) + " Following: " + iimGetLastExtract(2) + " Followers: " + iimGetLastExtract(3) + " Initiating follow procedure ... ";
-			writeLog("INFO",PROFILE,desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
+			writeLog("INFO",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
 			
 			//=======
 			//1. get an array of all urls
@@ -223,6 +223,7 @@ function follow() {
 					desc = "Code 10: The account is maybe locked or suspended. Type of lock not recognized, manual check required!";
 			}
 			writeLog("ERROR",PROFILE,desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
+			writeLog("ERROR",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
 			closeFirefox();
 		}
 			
@@ -249,11 +250,13 @@ function follow() {
 					desc = "Code 10: The account is maybe locked or suspended. Type of lock not recognized, manual check required!";
 			}
 			writeLog("ERROR",PROFILE,desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
+			writeLog("ERROR",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
 			closeFirefox();
 		} else {
 			//something is wrong, we dont know what
 			var desc = "Code 10: Couldn't log in, maybe password was not remembered correctly, or some other error occurred. Manual check required!";
 			writeLog("ERROR",PROFILE,desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
+			writeLog("ERROR",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
 			closeFirefox();
 		}
 	}
@@ -279,6 +282,7 @@ function loop(i, followedTotal, urls) {
 		//log a warning for the invalid url
 		desc = "Code 31: " + urls[i] + " is not a valid url!";
 		writeLog("WARNING",PROFILE,desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
+		writeLog("WARNING",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
 			var lockedCheck = isLocked();
 			if (!lockedCheck) {
 				if (i<urls.length) {
@@ -316,6 +320,7 @@ function loop(i, followedTotal, urls) {
 						desc = "Code 10: The account is maybe locked or suspended. Type of lock not recognized, manual check required!";
 				}
 				writeLog("ERROR",PROFILE,desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
+				writeLog("ERROR",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
 				closeFirefox();
 			}
 
@@ -390,6 +395,7 @@ function loop(i, followedTotal, urls) {
 								}
 								
 								writeLog("ERROR",PROFILE,desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
+								writeLog("ERROR",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
 								closeFirefox();
 							} else {
 							var j=i+1;
@@ -444,6 +450,7 @@ function loop(i, followedTotal, urls) {
 								desc = "Code 10: The account is maybe locked or suspended. Type of lock not recognized, manual check required!";
 						}
 						writeLog("ERROR",PROFILE,desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
+						writeLog("ERROR",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
 						closeFirefox();
 					} else {
 					//log following
@@ -455,6 +462,7 @@ function loop(i, followedTotal, urls) {
 					//if nobody got followed, it is suspicious. Better log warning so we can investigate manually
 					if (followedThis == 0) {
 						var desc = "Code 33: Followed 0 accounts from url: [" + j + "/" + urls.length + "] " + urls[i] + "! Check this manually, something may be wrong!";
+						writeLog("WARNING",PROFILE,desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
 						writeLog("WARNING",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
 					} 
 					
