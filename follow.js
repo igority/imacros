@@ -1,5 +1,5 @@
 /***********************************
- follow.js v1.07
+ follow.js v1.08
 ************************************/
 
 //global parameters with default values.
@@ -37,123 +37,168 @@ function follow() {
 	var prevValue;
 	var followURL;
 	
+	/*
+	*	go to twitter.com/login
+	*	check if account ok
+	*	if not, check if signed in. If not, sign in
+	*	else check if locked (phone, password). If yes, log error and exit
+	*	if account ok, check if locked (suspended). If suspended, log error and exit.
+	*	if not suspended, account ok.
+	*	now grab data for tweets, follows and followers, and log info. 
+	*	Proceed with following from csv
+	*/
+	if (SHOW_ALERTS) alert('goto twitter.com');
 	load =  "CODE:";
 	load += 'URL GOTO="https://twitter.com"' + '\n';
 	iimPlay(load);
 	
-	var lockedCheck = isLocked();
-	if (!lockedCheck) {
-
-		//=======
-		//1. get an array of all urls
+	var accountOK = false;
+	//check if account ok
+	load =  "CODE:";
+	load +=  "SET !EXTRACT NULL"; + "\n";
+	load +=  'TAG XPATH="id(\'page-container\')/div[1]/div[1]/div/div[2]/ul/li[1]/a/span[2]" EXTRACT=TXT' + '\n';
+	iimPlay(load);
+	if (SHOW_ALERTS) alert("extracting no of tweets...");
+	if (SHOW_ALERTS) alert(iimGetLastExtract(1));
+	if (iimGetLastExtract(1) == null || iimGetLastExtract(1) == '#EANF#') {
+		accountOK = false;
+	} else {
+		accountOK = true;
+	}
+	if (SHOW_ALERTS) alert('accountOK = ' + accountOK);
+	if (!accountOK) {
+		if (SHOW_ALERTS) alert('going to twitter.com/login ... ');
+		//check if signed in, If not, sign in
 		load =  "CODE:";
-		load +=  "set !extract null" + "\n"; 
-		load +=  "SET !DATASOURCE " + URLS_FULL_PATH + "\n"; 
-		load +=  "SET !DATASOURCE_COLUMNS 1" + "\n"; 
-		load +=  "SET !DATASOURCE_LINE " + i + "\n"; 
-		load +=  "SET !extract {{!col1}}" + "\n";
+		load +=  "SET !EXTRACT NULL" + "\n";
+		load += 'URL GOTO="https://twitter.com/login"' + '\n';
+		load += 'WAIT SECONDS=2' + '\n';
+		load +=  'TAG XPATH="id(\'page-container\')/div/div[1]/form/div[2]/button" EXTRACT=TXT' + '\n';
 		iimPlay(load);
-		value=iimGetLastExtract();
-		//alert(value);
-		while (value != "") {
-			urls[i-1] = value + '/followers';
-			i++;
+
+		if (SHOW_ALERTS) alert('extracting LogIn button ... ');
+		if (SHOW_ALERTS) alert(iimGetLastExtract(1));
+		if (iimGetLastExtract(1) == 'Log in') {
+			//click the login button
+			if (SHOW_ALERTS) alert('click the login button ... ');
 			load =  "CODE:";
-			load +=  "set !extract null" + "\n"; 
+			load +=  "SET !EXTRACT NULL" + "\n";
+			load +=  'TAG XPATH="id(\'page-container\')/div/div[1]/form/div[2]/button"' + '\n';
+			iimPlay(load);
+		}
+		
+		//now check if logged in. if yes accountOK = true, if not check other stuff
+		if (SHOW_ALERTS) alert('check if logged in ... grab No. of tweets ... ');
+		load =  "CODE:";
+		load +=  "SET !EXTRACT NULL" + "\n";
+		load +=  'TAG XPATH="id(\'page-container\')/div[1]/div[1]/div/div[2]/ul/li[1]/a/span[2]" EXTRACT=TXT' + '\n';
+		load +=  "WAIT SECONDS=2" + "\n";
+		iimPlay(load);
+		if (SHOW_ALERTS) alert(iimGetLastExtract(1));
+		if (iimGetLastExtract(1) == null || iimGetLastExtract(1) == '#EANF#') {
+			accountOK = false;
+		} else {
+			accountOK = true;
+		}
+		if (SHOW_ALERTS) alert('accountOK = ' + accountOK);
+	}
+	
+	var lockedCheck = isLocked();
+	if (SHOW_ALERTS) alert ("lockedcheck = " + lockedCheck);
+	if (!lockedCheck || !accountOK) {
+		//if (1) {
+		//check if suspended
+		var suspendedCheck = isSuspended();
+		if (suspendedCheck != 9) {
+		
+			//before starting with follow procedure, log info about account details
+			load =  "CODE:";
+			load +=  "SET !EXTRACT NULL" + "\n";
+			load +=  'TAG XPATH="id(\'page-container\')/div[1]/div[1]/div/div[2]/ul/li[1]/a/span[2]" EXTRACT=TXT' + '\n';
+			load +=  'TAG XPATH="id(\'page-container\')/div[1]/div[1]/div/div[2]/ul/li[2]/a/span[2]" EXTRACT=TXT' + '\n';
+			load +=  'TAG XPATH="id(\'page-container\')/div[1]/div[1]/div/div[2]/ul/li[3]/a/span[2]" EXTRACT=TXT' + '\n';
+			iimPlay(load);
+			desc = "Code 95: Stats before follow: Tweets: " + iimGetLastExtract(1) + " Following: " + iimGetLastExtract(2) + " Followers: " + iimGetLastExtract(3) + " Initiating follow procedure ... ";
+			writeLog("INFO",PROFILE,desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
+			
+			//=======
+			//1. get an array of all urls
+			load =  "CODE:";
+			load +=  "set !EXTRACT NULL" + "\n"; 
 			load +=  "SET !DATASOURCE " + URLS_FULL_PATH + "\n"; 
 			load +=  "SET !DATASOURCE_COLUMNS 1" + "\n"; 
 			load +=  "SET !DATASOURCE_LINE " + i + "\n"; 
 			load +=  "SET !extract {{!col1}}" + "\n";
 			iimPlay(load);
 			value=iimGetLastExtract();
-		}
-		
-		if (SHOW_ALERTS) {
-		/*
-		var SHOW_ALERTS = true;
-		var MAX_FOLLOW_COUNT = 400;
-		var FOLLOW_SCROLLS_COUNT = 1;
-
-		var GLOBAL_ERROR_LOGS_FOLDER = 'C:\\Tasks\\GlobalLogs';
-		var GLOBAL_ERROR_LOGS_FILE = 'global_error_log.csv';
-
-		var GLOBAL_INFO_LOGS_FOLDER = 'C:\\Tasks\\GlobalLogs';
-		var GLOBAL_INFO_LOGS_FILE = 'global_info_log.csv';
-
-		var LOG_FILE = PROFILE + 'log.csv';
-		var URLS_FILE = PROFILE + 'urls.csv';
-
-		var CSV_FOLDER = 'C:\\Tasks\\Csv';
-
-		var URLS_FULL_PATH = CSV_FOLDER + '\\' + URLS_FILE;
-		var LOG_FULL_PATH = CSV_FOLDER + '\\' + LOG_FILE;
-		*/
-			alert("PROFILE: " + PROFILE);
-			alert("\n" + "MAX_FOLLOW_COUNT: " + MAX_FOLLOW_COUNT);
-			alert("\n" + "FOLLOW_SCROLLS_COUNT: " + FOLLOW_SCROLLS_COUNT);
-			alert("\n" + "GLOBAL_ERROR_LOGS_FOLDER: " + GLOBAL_ERROR_LOGS_FOLDER);
-			alert("\n" + "GLOBAL_ERROR_LOGS_FILE: " + GLOBAL_ERROR_LOGS_FILE);
-			alert("\n" + "GLOBAL_INFO_LOGS_FOLDER: " + GLOBAL_INFO_LOGS_FOLDER);
-			alert("\n" + "GLOBAL_INFO_LOGS_FILE: " + GLOBAL_INFO_LOGS_FILE);
-			alert("\n" + "LOG_FILE: " + LOG_FILE);
-			alert("\n" + "URLS_FILE: " + URLS_FILE);
-			alert("\n" + "URLS_FULL_PATH: " + URLS_FULL_PATH);
-			alert("\n" + "LOG_FULL_PATH: " + LOG_FULL_PATH);
-
+			//alert(value);
+			while (value != "") {
+				urls[i-1] = value + '/followers';
+				i++;
+				load =  "CODE:";
+				load +=  "set !EXTRACT NULL" + "\n"; 
+				load +=  "SET !DATASOURCE " + URLS_FULL_PATH + "\n"; 
+				load +=  "SET !DATASOURCE_COLUMNS 1" + "\n"; 
+				load +=  "SET !DATASOURCE_LINE " + i + "\n"; 
+				load +=  "SET !extract {{!col1}}" + "\n";
+				iimPlay(load);
+				value=iimGetLastExtract();
 			}
 			
-			//=======	
-		//2. Get the last logged url	
-		i=1;
-		load =  "CODE:";
-		load +=  "set !extract null" + "\n"; 
-		load +=  "SET !DATASOURCE " + LOG_FULL_PATH + "\n"; 
-		load +=  "SET !DATASOURCE_COLUMNS 2" + "\n"; 
-		load +=  "SET !DATASOURCE_LINE " + i + "\n"; 
-		load +=  "SET !extract {{!col1}}" + "\n";
-		load +=  "ADD !extract {{!col2}}" + "\n";
-		iimPlay(load);
-		value=iimGetLastExtract(0);
-		prevValue = value;
+			if (SHOW_ALERTS) {
 
-		while (value != "") {
-			i++;	
+				alert("PROFILE: " + PROFILE);
+				alert("\n" + "MAX_FOLLOW_COUNT: " + MAX_FOLLOW_COUNT);
+				alert("\n" + "FOLLOW_SCROLLS_COUNT: " + FOLLOW_SCROLLS_COUNT);
+				alert("\n" + "GLOBAL_ERROR_LOGS_FOLDER: " + GLOBAL_ERROR_LOGS_FOLDER);
+				alert("\n" + "GLOBAL_ERROR_LOGS_FILE: " + GLOBAL_ERROR_LOGS_FILE);
+				alert("\n" + "GLOBAL_INFO_LOGS_FOLDER: " + GLOBAL_INFO_LOGS_FOLDER);
+				alert("\n" + "GLOBAL_INFO_LOGS_FILE: " + GLOBAL_INFO_LOGS_FILE);
+				alert("\n" + "LOG_FILE: " + LOG_FILE);
+				alert("\n" + "URLS_FILE: " + URLS_FILE);
+				alert("\n" + "URLS_FULL_PATH: " + URLS_FULL_PATH);
+				alert("\n" + "LOG_FULL_PATH: " + LOG_FULL_PATH);
+
+			}
+				
+			//=======	
+			//2. Get the last logged url	
+			i=1;
 			load =  "CODE:";
-			load +=  "set !extract null" + "\n"; 
+			load +=  "SET !EXTRACT NULL" + "\n"; 
 			load +=  "SET !DATASOURCE " + LOG_FULL_PATH + "\n"; 
 			load +=  "SET !DATASOURCE_COLUMNS 2" + "\n"; 
 			load +=  "SET !DATASOURCE_LINE " + i + "\n"; 
 			load +=  "SET !extract {{!col1}}" + "\n";
 			load +=  "ADD !extract {{!col2}}" + "\n";
 			iimPlay(load);
-			prevValue = value;
 			value=iimGetLastExtract(0);
-		}
+			prevValue = value;
 
-		lastLog = prevValue.split("[EXTRACT]");
+			while (value != "") {
+				i++;	
+				load =  "CODE:";
+				load +=  "set !EXTRACT NULL" + "\n"; 
+				load +=  "SET !DATASOURCE " + LOG_FULL_PATH + "\n"; 
+				load +=  "SET !DATASOURCE_COLUMNS 2" + "\n"; 
+				load +=  "SET !DATASOURCE_LINE " + i + "\n"; 
+				load +=  "SET !extract {{!col1}}" + "\n";
+				load +=  "ADD !extract {{!col2}}" + "\n";
+				iimPlay(load);
+				prevValue = value;
+				value=iimGetLastExtract(0);
+			}
 
-		//lastLog[1] contains the url of the last login. Sort the urls array based on this value
-		/*
-		var alertmsg = "urls before sort:\n";
-		for (i=0;i<urls.length;i++) {
-			alertmsg += urls[i] + "\n";
-		}
-		//alert(alertmsg);
-		*/
-		urls = sorturls(urls,lastLog);
-		/*
-		var alertmsg = "urls after sort:\n";
-		for (i=0;i<urls.length;i++) {
-			alertmsg += urls[i] + "\n";
-		}
-		//alert(alertmsg);
-		*/
-		/*
-		*================------------------========================
-		*/
+			lastLog = prevValue.split("[EXTRACT]");
 
-			
-				//log this url
+			urls = sorturls(urls,lastLog);
+
+			/*
+			*================------------------========================
+			*/
+
+				
+			//log this url
 			iimSet("followURL",urls[0]);
 			load =  "CODE:";
 			load +=  "SET !extract {{followURL}}" + "\n";
@@ -166,30 +211,51 @@ function follow() {
 			var i=0;
 			
 			loop(i,followedTotal,urls);
+		} else {
+			//account suspended
+			//log and exit
+			var desc;
+			switch(suspendedCheck) {
+				case 9:
+					desc = "Code 09: The account has been suspended";
+					break;
+				default:
+					desc = "Code 10: The account is maybe locked or suspended. Type of lock not recognized, manual check required!";
+			}
+			writeLog("ERROR",PROFILE,desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
+			closeFirefox();
+		}
 			
 	} else {
-		var desc;
-		switch(lockedCheck) {
-			case 1:
-				desc = "Code 03: The account has been locked! Pending phone verification!";
-				break;
-			case 2:
-				desc = "Code 04: The account has been locked! Password change required!";
-				break;
-			case 3:
-				desc = "Code 10: The account is probably locked (more likely) or suspended. Type of lock not recognized, manual check required!";
-				break;
-			case 8:
-				desc = "Code 10: The account is probably suspended (more likely) or locked. Type of lock not recognized, manual check required!";
-				break;
-			case 9:
-				desc = "Code 05: The account has been suspended!";
-				break;
-			default:
-				desc = "Code 10: The account is maybe locked or suspended. Type of lock not recognized, manual check required!";
+		if (lockedCheck) {
+			var desc;
+			switch(lockedCheck) {
+				case 1:
+					desc = "Code 03: The account has been locked! Pending phone verification!";
+					break;
+				case 2:
+					desc = "Code 04: The account has been locked! Password change required!";
+					break;
+				case 3:
+					desc = "Code 10: The account is probably locked (more likely) or suspended. Type of lock not recognized, manual check required!";
+					break;
+				case 8:
+					desc = "Code 10: The account is probably suspended (more likely) or locked. Type of lock not recognized, manual check required!";
+					break;
+				case 9:
+					desc = "Code 05: The account has been suspended!";
+					break;
+				default:
+					desc = "Code 10: The account is maybe locked or suspended. Type of lock not recognized, manual check required!";
+			}
+			writeLog("ERROR",PROFILE,desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
+			closeFirefox();
+		} else {
+			//something is wrong, we dont know what
+			var desc = "Code 10: Couldn't log in, maybe password was not remembered correctly, or some other error occurred. Manual check required!";
+			writeLog("ERROR",PROFILE,desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
+			closeFirefox();
 		}
-		writeLog("ERROR",PROFILE,desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
-		closeFirefox();
 	}
 
 }
@@ -200,7 +266,7 @@ function loop(i, followedTotal, urls) {
 	iimSet("followURL",urls[i]);
 
 	load =  "CODE:";
-	load +=  "set !EXTRACT null" + "\n"; 
+	load +=  "set !EXTRACT NULL" + "\n"; 
 	load += "URL GOTO={{followURL}}" + "\n";
 	load += "TAG POS=1 TYPE=IMG ATTR=CLASS:ProfileAvatar-image EXTRACT=ALT" + "\n";
 	iimPlay(load);
@@ -498,33 +564,21 @@ function closeFirefox() {
 	iimPlayCode(myCode);
 }
 
-function isLocked() {
+function isSuspended() {
 	/*
 	 * possible values:
 	 * 0 - not locked
-	 * 1 - phone verification
-	 * 2 - password change required
-	 * 3 - something else (blocked)
 	 * 8 - something else (suspended)
 	 * 9 - suspended
 	 */
-	var load;
-	load =  "SET !TIMEOUT_STEP 0" + "\n";
-	load += "SET !EXTRACT null" + "\n";
-	load += "TAG POS=1 TYPE=DIV ATTR=CLASS:PageHeader&&TXT:* EXTRACT=TXT" + "\n";
-	iimPlayCode(load);
-
-	var value = iimGetLastExtract().trim();
-	if (SHOW_ALERTS) alert('value = ' + value);
-	if (value == null || value == '#EANF#') {
-	if (SHOW_ALERTS) alert('return 0');
-		var load;
-		load =  "SET !TIMEOUT_STEP 0" + "\n";
-		load += "SET !EXTRACT null" + "\n";
-		load += "TAG POS=1 TYPE=DIV ATTR=ID:account-suspended&&TXT:* EXTRACT=TXT" + "\n";
-		iimPlayCode(load);
-		var valueSuspended = iimGetLastExtract().trim();
-		if (SHOW_ALERTS) alert(valueSuspended);
+		if (SHOW_ALERTS) alert("extracting suspended header...")
+		var load = "CODE:";
+		load += "SET !TIMEOUT_STEP 0" + "\n";
+		load += "SET !EXTRACT NULL" + "\n";
+		load += "TAG POS=1 TYPE=DIV ATTR=ID:account-suspended EXTRACT=TXT" + "\n";
+		iimPlay(load);
+		var valueSuspended = iimGetLastExtract(1).trim();
+		if (SHOW_ALERTS) alert("suspended value extracted: " + valueSuspended);
 		if (valueSuspended == '#EANF#' || valueSuspended == null) {
 			return 0;
 		} else {
@@ -534,6 +588,27 @@ function isLocked() {
 				return 8;
 			}
 		}
+}
+
+function isLocked() {
+	/*
+	 * possible values:
+	 * 0 - not locked
+	 * 1 - phone verification
+	 * 2 - password change required
+	 * 3 - something else (blocked)
+	 */
+	 if (SHOW_ALERTS) alert('starting check if locked...');
+	var load = "CODE:";
+	load +=  "SET !TIMEOUT_STEP 0" + "\n";
+	load += "SET !EXTRACT NULL" + "\n";
+	load += "TAG POS=1 TYPE=DIV ATTR=CLASS:PageHeader EXTRACT=TXT" + "\n";
+	//load += "TAG POS=1 TYPE=DIV ATTR=CLASS:PageHeader&&TXT:* EXTRACT=TXT" + "\n";
+	iimPlay(load);
+	if (SHOW_ALERTS) alert('extracted value for PageHeader:' + iimGetLastExtract(1));
+	var value = iimGetLastExtract().trim();
+	if (SHOW_ALERTS) alert('trimmed value = ' + value);
+	if (value == null || value == '#EANF#') {
 		return 0;
 	} else {
 		switch(value) {
