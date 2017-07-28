@@ -1,5 +1,5 @@
 /***********************************
- follow.js v1.10
+ follow.js v1.11
 ************************************/
 
 //global parameters with default values.
@@ -567,9 +567,11 @@ function sorturls(urls, lastLog) {
 }
 
 function closeFirefox() {
-	var myCode = 'WAIT SECONDS=1' + '\n';
-	var myCode = 'EVENT TYPE=KEYPRESS SELECTOR=* CHAR="w" MODIFIERS="ctrl,shift"';
-	iimPlayCode(myCode);
+	if (SHOW_ALERTS) alert("closing firefox ...");
+	var load = "CODE:";
+	load += 'WAIT SECONDS=1' + '\n';
+	load += 'EVENT TYPE=KEYPRESS SELECTOR=* CHAR="w" MODIFIERS="ctrl,shift"';
+	iimPlay(load);
 }
 
 function isSuspended() {
