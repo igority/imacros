@@ -1,5 +1,5 @@
 /***********************************
- follow.js v1.09
+ follow.js v1.10
 ************************************/
 
 //global parameters with default values.
@@ -55,7 +55,7 @@ function follow() {
 	var accountOK = false;
 	//check if account ok
 	load =  "CODE:";
-	load +=  "SET !EXTRACT NULL"; + "\n";
+	load +=  "SET !EXTRACT NULL" + "\n";
 	load +=  'TAG XPATH="id(\'page-container\')/div[1]/div[1]/div/div[2]/ul/li[1]/a/span[2]" EXTRACT=TXT' + '\n';
 	iimPlay(load);
 	if (SHOW_ALERTS) alert("extracting no of tweets...");
