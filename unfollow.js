@@ -1,5 +1,5 @@
 /***********************************
- unfollow.js v1.08
+ unfollow.js v1.08a
 ************************************/
 
 /*	
@@ -255,7 +255,7 @@ function writeLog(profile,type,description,folder,file) {
 	iimSet("DESCRIPTION",description);
 	load =  "CODE:";
 	load +=  "SET !extract {{!NOW:yymmddhhnnss}}" + "\n";
-	load +=  "SET !extract {{!NOW:dd.mm.yyyy_hh:nn:ss}}" + "\n";
+	load +=  "ADD !extract {{!NOW:dd.mm.yyyy_hh:nn:ss}}" + "\n";
 	load +=  "ADD !extract {{PROFILE}}" + "\n";
 	load +=  "ADD !extract {{TYPE}}" + "\n";
 	load +=  "ADD !extract {{DESCRIPTION}}" + "\n";
