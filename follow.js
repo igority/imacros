@@ -1,5 +1,5 @@
 /***********************************
- follow.js v1.14
+ follow.js v1.15
 ************************************/
 
 //global parameters with default values.
@@ -285,7 +285,7 @@ function loop(i, followedTotal, urls) {
 		writeLog("WARNING",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
 			var lockedCheck = isLocked();
 			if (!lockedCheck) {
-				if (i<urls.length) {
+				if (i<urls.length-1) {
 					//call for the next one
 					loop(i+1, followedTotal,urls);
 				} else {
