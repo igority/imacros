@@ -1,5 +1,5 @@
 /***********************************
- follow.js v1.12
+ follow.js v1.12a
 ************************************/
 
 //global parameters with default values.
@@ -333,10 +333,10 @@ function loop(i, followedTotal, urls) {
 			//scroll for mass follow
 		load =  "CODE:";
 		for (k = 0; k < FOLLOW_SCROLLS_COUNT; k++) {
-			load +=  "EVENT TYPE=KEYPRESS SELECTOR=* KEY=36" + "\n";
-			load +=  "WAIT SECONDS=1" + "\n";
 			load +=  "EVENT TYPE=KEYPRESS SELECTOR=* KEY=35" + "\n";
-			load +=  "WAIT SECONDS=2" + "\n";
+			load +=  "WAIT SECONDS=1.5" + "\n";
+			load +=  "EVENT TYPE=KEYPRESS SELECTOR=* KEY=36" + "\n";
+			load +=  "WAIT SECONDS=0.5" + "\n";
 		}
 		iimPlay(load);
 		loadJQuery('https://raw.githubusercontent.com/igority/imacros/master/jq.for.im.js');	
