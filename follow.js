@@ -1,5 +1,5 @@
 /***********************************
- follow.js v1.13a
+ follow.js v1.14
 ************************************/
 
 //global parameters with default values.
@@ -510,11 +510,13 @@ function loop(i, followedTotal, urls) {
 function writeLog(profile,type,description,folder,file) {
 	//logs will be written in this format:
 	//timestamp, date, profile, type, description
+	iimSet("PROCEDURE","FOLLOW");
 	iimSet("TYPE",type);
 	iimSet("PROFILE",profile);
 	iimSet("DESCRIPTION",description);
 	load =  "CODE:";
-	load +=  "SET !extract {{!NOW:yymmddhhnnss}}" + "\n";
+	load +=  "SET !extract {{PROCEDURE}}" + "\n";
+	load +=  "ADD !extract {{!NOW:yymmddhhnnss}}" + "\n";
 	load +=  "ADD !extract {{!NOW:dd.mm.yyyy_hh:nn:ss}}" + "\n";
 	load +=  "ADD !extract {{PROFILE}}" + "\n";
 	load +=  "ADD !extract {{TYPE}}" + "\n";

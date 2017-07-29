@@ -1,5 +1,5 @@
 /***********************************
- unfollow.js v1.10
+ unfollow.js v1.11
 ************************************/
 
 /*	
@@ -249,11 +249,13 @@ function unfollow() {
 function writeLog(profile,type,description,folder,file) {
 	//logs will be written in this format:
 	//timestamp, date, profile, type, description
+	iimSet("PROCEDURE","UNFOLLOW");
 	iimSet("TYPE",type);
 	iimSet("PROFILE",profile);
 	iimSet("DESCRIPTION",description);
 	load =  "CODE:";
-	load +=  "SET !extract {{!NOW:yymmddhhnnss}}" + "\n";
+	load +=  "SET !extract {{PROCEDURE}}" + "\n";
+	load +=  "ADD !extract {{!NOW:yymmddhhnnss}}" + "\n";
 	load +=  "ADD !extract {{!NOW:dd.mm.yyyy_hh:nn:ss}}" + "\n";
 	load +=  "ADD !extract {{PROFILE}}" + "\n";
 	load +=  "ADD !extract {{TYPE}}" + "\n";
