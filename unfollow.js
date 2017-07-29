@@ -1,5 +1,5 @@
 /***********************************
- unfollow.js v1.09
+ unfollow.js v1.10
 ************************************/
 
 /*	
@@ -146,8 +146,7 @@ function unfollow() {
 		} else {
 			if (valueInt < MASS_UNFOLLOWS_COUNT*100) {
 			var desc = "Code 33: Not enough accounts to unfollow. Available: " + valueInt + ", intended to unfollow: " + MASS_UNFOLLOWS_COUNT*100;
-			writeLog(PROFILE,"WARNING",desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
-			writeLog(PROFILE,"WARNING",desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
+			writeLog(PROFILE,"INFO",desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
 			}
 		}
 		
