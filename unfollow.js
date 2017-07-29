@@ -1,5 +1,5 @@
 /***********************************
- unfollow.js v1.08a
+ unfollow.js v1.09
 ************************************/
 
 /*	
@@ -94,8 +94,8 @@ function unfollow() {
 	if (!success) {
 		//log an error for unsuccessful unfollow, and close
 		var desc = "Code 02: Unable to Unfollow after " + RETRIES + " retries";
-		writeLog(PROFILE,"WARNING",desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
-		writeLog(PROFILE,"WARNING",desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
+		writeLog(PROFILE,"ERROR",desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
+		writeLog(PROFILE,"ERROR",desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
 
 			window.setTimeout(
 			function () {
