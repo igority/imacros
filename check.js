@@ -1,5 +1,5 @@
 /***********************************
- check.js v1.00
+ check.js v1.01
 ************************************/
 
 //global parameters with default values.
@@ -173,11 +173,14 @@ function do_the_check() {
 }
 
 function writeLog(profile,type,description,folder,file) {
+	//logs will be written in this format:
+	//timestamp, date, profile, type, description
 	iimSet("TYPE",type);
 	iimSet("PROFILE",profile);
 	iimSet("DESCRIPTION",description);
 	load =  "CODE:";
-	load +=  "SET !extract {{!NOW:ddmmyy_hhnnss}}" + "\n";
+	load +=  "SET !extract {{!NOW:yymmddhhnnss}}" + "\n";
+	load +=  "SET !extract {{!NOW:dd.mm.yyyy_hh:nn:ss}}" + "\n";
 	load +=  "ADD !extract {{PROFILE}}" + "\n";
 	load +=  "ADD !extract {{TYPE}}" + "\n";
 	load +=  "ADD !extract {{DESCRIPTION}}" + "\n";
