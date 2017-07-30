@@ -1,5 +1,5 @@
 /***********************************
- check.js v1.02
+ check.js v1.03
 ************************************/
 
 //global parameters with default values.
@@ -37,32 +37,36 @@ function check() {
 	load +=  "TAB CLOSEALLOTHERS"; + "\n";
 	iimPlay(load);
 	
+	var desc = 'Code 40: The previous task wasn\'t finished completely. Trying to find the reason ...';
+	writeLog("ERROR",PROFILE,desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
+	writeLog("ERROR",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
+	
 	var reason = do_the_check();
-	var desc;
+	var desc = '';
 	switch(reason) {
 		case 41:
-			desc = "Code 41: The previous task wasn't finished completely! Reason: The account was logged out. Successfully logged in, and confirmed account is ok";
+			desc = "Code 41: The previous account was logged out. Successfully logged in, and confirmed account is ok";
 			break;
 		case 42:
-			desc = "Code 42: The previous task wasn't finished completely! Reason: The account was logged out. Tried logging in, couldn't do it. Manual check required!";
+			desc = "Code 42: The previous account was logged out. Tried logging in, couldn't do it. Manual check required!";
 			break;
 		case 43:
-			desc = "Code 43: The previous task wasn't finished completely! Reason: The account was suspended";
+			desc = "Code 43: The previous account was suspended";
 			break;
 		case 44:
-			desc = "Code 44: The previous task wasn't finished completely! Reason: The account was logged in, everything looks fine, but for some reason browser was still on (bug maybe?)";
+			desc = "Code 44: The previous account was logged in, everything looks fine, but for some reason browser was still on (bug maybe?)";
 			break;
 		case 45:
-			desc = "Code 45: The previous task wasn't finished completely! Reason: The account is locked. Pending phone verification";
+			desc = "Code 45: The previous account is locked. Pending phone verification";
 			break;
 		case 46:
-			desc = "Code 46: The previous task wasn't finished completely! Reason: The account is locked. Password change required";
+			desc = "Code 46: The previous account is locked. Password change required";
 			break;
 		case 47:
-			desc = "Code 47: The previous task wasn't finished completely! Reason: The account is probably locked. Couldn't find the reason. Manual check required.";
+			desc = "Code 47: The previous account is probably locked. Couldn't find the reason. Manual check required.";
 			break;
 		default:
-			desc = "Code 49: The previous task wasn't finished completely! Reason: Couldn't find the reason. Manual check required.";
+			desc = "Code 49: Couldn't find the reason for not finishing the previous task. Manual check required.";
 	}
 	writeLog("ERROR",PROFILE,desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
 	writeLog("ERROR",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
