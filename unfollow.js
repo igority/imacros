@@ -1,5 +1,5 @@
 /***********************************
- unfollow.js v1.11
+ unfollow.js v1.12
 ************************************/
 
 /*	
@@ -169,7 +169,7 @@ function unfollow() {
 
 		if (value2 != "Unfollow") {
 			//no Unfollow button found. Obviously we can't unfollow, so log error and close
-			var desc = "Code 05: Couldn't detect a single Unfollow button. Either page timed out or something else is wrong. Manual check is required.";
+			var desc = "Code 06: Couldn't detect a single Unfollow button. Either page timed out or something else is wrong. Manual check is required.";
 			writeLog(PROFILE,"ERROR",desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
 			writeLog(PROFILE,"ERROR",desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
 			closeFirefox();
@@ -219,7 +219,7 @@ function unfollow() {
 					var actualUnfollowCount = iimGetLastExtract(1);
 					if (actualUnfollowCount == null || actualUnfollowCount == '#EANF#') {
 						//log an error
-						var desc = "Code 04: Unfollowing failed! Couldn't retrieve info about unfollowed accounts, most likely none are unfollowed.";
+						var desc = "Code 07: Unfollowing failed! Couldn't retrieve info about unfollowed accounts, most likely none are unfollowed.";
 						writeLog(PROFILE,"ERROR",desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
 						writeLog(PROFILE,"ERROR",desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
 						actualUnfollowCount = 0;
