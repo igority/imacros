@@ -1,5 +1,5 @@
 /***********************************
- follow.js v1.15
+ follow.js v1.16
 ************************************/
 
 //global parameters with default values.
@@ -217,7 +217,7 @@ function follow() {
 			var desc;
 			switch(suspendedCheck) {
 				case 9:
-					desc = "Code 09: The account has been suspended";
+					desc = "Code 05: The account has been suspended";
 					break;
 				default:
 					desc = "Code 10: The account is maybe locked or suspended. Type of lock not recognized, manual check required!";
@@ -462,7 +462,7 @@ function loop(i, followedTotal, urls) {
 					
 					//if nobody got followed, it is suspicious. Better log warning so we can investigate manually
 					if (followedThis == 0) {
-						var desc = "Code 33: Followed 0 accounts from url: [" + j + "/" + urls.length + "] " + urls[i] + "! Check this manually, something may be wrong!";
+						var desc = "Code 35: Followed 0 accounts from url: [" + j + "/" + urls.length + "] " + urls[i] + "! Check this manually, something may be wrong!";
 						writeLog("WARNING",PROFILE,desc,GLOBAL_ERROR_LOGS_FOLDER,GLOBAL_ERROR_LOGS_FILE);
 						writeLog("WARNING",PROFILE,desc,GLOBAL_INFO_LOGS_FOLDER,GLOBAL_INFO_LOGS_FILE);
 					} 
