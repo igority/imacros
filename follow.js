@@ -1,5 +1,5 @@
 /***********************************
- follow.js v1.17
+ follow.js v1.17a
 ************************************/
 
 //global parameters with default values.
@@ -9,8 +9,8 @@ var PROFILE;				//the indentifier for this profile. This one MUST be set in the 
 
 var TEST_MODE = false;
 var SHOW_ALERTS = false;
-var MAX_FOLLOW_COUNT = 400;
-var FOLLOW_SCROLLS_COUNT = 30;
+var MAX_FOLLOW_COUNT = 350;
+var FOLLOW_SCROLLS_COUNT = 28;
 
 var GLOBAL_ERROR_LOGS_FOLDER = 'C:\\Tasks\\GlobalLogs';
 var GLOBAL_ERROR_LOGS_FILE = 'global_error_log.csv';
