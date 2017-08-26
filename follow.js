@@ -1,5 +1,5 @@
 /***********************************
- follow.js v1.18
+ follow.js v1.18a
 ************************************/
 
 //global parameters with default values.
@@ -411,7 +411,7 @@ function loop(i, followedTotal, urls) {
 							}
 						}
 					},
-					__cnt__++*1000*(Math.floor(Math.random() * (2 - 1.5)) + 1.5) * 1.3
+					__cnt__++*1000*(Math.floor(Math.random() * (2 - 1.5)) + 1.5) * 1.25
 				);
 			}
 		);
@@ -501,7 +501,7 @@ function loop(i, followedTotal, urls) {
 					}
 				}
 			},
-			__cnt__++*1000*(Math.floor(Math.random() * (2 - 1.5)) + 1.5)
+			__cnt__++*1000*(Math.floor(Math.random() * (2 - 1.5)) + 1.5)*1.25
 		);
 	}
 
