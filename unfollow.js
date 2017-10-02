@@ -1,5 +1,5 @@
 /***********************************
- unfollow.js v1.13
+ unfollow.js v1.14
 ************************************/
 
 /*	
@@ -21,7 +21,7 @@ var WAIT_LOAD = 10; 		//initial time to wait for loading profile into ManageFlit
 var MAX_WAIT_STEPS = 50;	//if profile still hasn't been loaded, how many times should it re-check
 var STEP_TIME = 3;		//interval (seconds) for the additional checks
 
-var MASS_UNFOLLOWS_COUNT = 6;	//number of batches of Unfollow click. Every batch unfollows 100 users
+var MASS_UNFOLLOWS_COUNT = 2;	//number of batches of Unfollow click. Every batch unfollows 100 users
 var MASS_UNFOLLOW_DELAY = 10000;	//miliseconds to wait after a mass unfollow click, so another batch of accounts is being loaded.
 
 var GLOBAL_ERROR_LOGS_FOLDER = 'C:\\Tasks\\GlobalLogs';
