@@ -1,5 +1,5 @@
 /***********************************
- follow.js v1.18a
+ follow.js v1.19
 ************************************/
 
 //global parameters with default values.
@@ -9,8 +9,8 @@ var PROFILE;				//the indentifier for this profile. This one MUST be set in the 
 
 var TEST_MODE = false;
 var SHOW_ALERTS = false;
-var MAX_FOLLOW_COUNT = 450;
-var FOLLOW_SCROLLS_COUNT = 33;
+var MAX_FOLLOW_COUNT = 75;
+var FOLLOW_SCROLLS_COUNT = 8;
 
 var GLOBAL_ERROR_LOGS_FOLDER = 'C:\\Tasks\\GlobalLogs';
 var GLOBAL_ERROR_LOGS_FILE = 'global_error_log.csv';
@@ -411,7 +411,7 @@ function loop(i, followedTotal, urls) {
 							}
 						}
 					},
-					__cnt__++*1000*(Math.floor(Math.random() * (2 - 1.5)) + 1.5) * 1.25
+					__cnt__++*5000*(Math.floor(Math.random() * (2 - 1.5)) + 1.5) * 1.25
 				);
 			}
 		);
@@ -501,7 +501,7 @@ function loop(i, followedTotal, urls) {
 					}
 				}
 			},
-			__cnt__++*1000*(Math.floor(Math.random() * (2 - 1.5)) + 1.5)*1.25
+			__cnt__++*5000*(Math.floor(Math.random() * (2 - 1.5)) + 1.5)*1.25
 		);
 	}
 
